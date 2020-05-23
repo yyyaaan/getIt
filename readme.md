@@ -5,5 +5,5 @@ Please note that the NodeJS packages are not included; install separately.
 # Folder Structure
 
 - (root):
-- cache:
-- src:
+- cache: stores the scraped webpages
+- src: the main codes including `R` and `js`
