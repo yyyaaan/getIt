@@ -1,7 +1,5 @@
 const req_url   = 'https://www.google.com/flights?hl=en&gl=FI&gsas=1#flt=AMS.SYD.2021-03-31.AMSDOH0QR274~DOHSYD1QR906*SYD.HEL.2021-04-13.SYDDOH0QR907~DOHHEL1QR303;c:EUR;e:1;sc:b;sd:1;t:b;tt:m';
 const req_name  = 'zzz'; 
-const req_froms = ['helsi', 'sydn', 'canber', 'helsi'];
-const req_dates = ['22 mar 2021', '14 apr 2021'];
 const puppeteer = require('puppeteer');
 const filesave  = require('fs');
 const wait_opts = {waitUntil: 'networkidle0'};
@@ -31,7 +29,7 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
   try {
     await page.goto(req_url, wait_opts);
     
-    // interactions
+    // try to click "reload" on one failure, otherwise giveup.
     try {
       await page.waitForSelector('div.flt-headline6.gws-flights-book__booking-options-heading');
     } catch (e) {
@@ -39,13 +37,10 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
       await page.waitForSelector('div.flt-headline6.gws-flights-book__booking-options-heading');
     }
     
-    // endpoints and extracting
-    // try outer/innerHTML/Text, textContent
     const text1 = await page.evaluate(() => document.querySelector('ol').outerHTML);
     const text2 = await page.evaluate(() => document.querySelector('table').outerHTML);
     const text  = text1 + text2;
     
-    // saving
     await page.screenshot({path: './cache/' + req_name + '.png'});
     filesave.writeFile('./cache/' + req_name + '.txt', text, function(err) {}); 
   } catch (e) {	
