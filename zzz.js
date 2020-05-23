@@ -10,7 +10,7 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
     // start browser    
     const browser = await puppeteer.launch({
         timeout: 19000,
-        headless: true, 
+        headless: false, 
         ignoreHTTPSErrors: true,
         defaultViewport: {width: 1080, height: 1330},
         args: ['--no-sandbox']
@@ -39,9 +39,22 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
     await page.waitFor(999);
     await page.keyboard.type(req_dates[0], {delay: 100}); 
     await page.keyboard.press('Tab');
-    
+
     await page.click('a#addFlight', wait_opts);
     await page.click('#T7-fromMultiFlight-Arrival1', wait_opts);
+    await page.keyboard.type(req_froms[2], {delay: 100}); 
+    await page.keyboard.press('Tab');
+    await page.keyboard.type(req_froms[3], {delay: 100}); 
+    await page.keyboard.press('Tab');
+    await page.type('T7-departure_01', req_dates[1]);
+    await page.keyboard.press('Tab');
+
+    await page.click('premiumOnlydrop');
+    await page.keyboar.press('ArrowDown');
+    
+    await page.watiFor(6000);
+
+
 
     // saving
     await page.screenshot({path: './cache/zzz.png'});
