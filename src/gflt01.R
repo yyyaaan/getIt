@@ -25,8 +25,8 @@ util_runjs  <- function(jsseq, req_url, req_name, out_text){
 
 start_gflt01 <- function(base_url, dep_dates, trip_days){
   base_url  <- 'https://www.google.com/flights?hl=en&gl=FI&gsas=1#flt=AMS.SYD.aaaa-aa-aa.AMSDOH0QR274~DOHSYD1QR906*SYD.HEL.bbbb-bb-bb.SYDDOH0QR907~DOHHEL1QR303;c:EUR;e:1;sc:b;sd:1;t:b;tt:m'
-  dep_dates <- as.Date("2021-02-08") + 1:3
-  trip_days <- 21:23 
+  dep_dates <- as.Date("2021-03-18") + 1:3
+  trip_days <- 21:22 
   
   seq <- 100
   for (i in 1:length(dep_dates)) {

@@ -1,7 +1,7 @@
-const req_url   = 'https://www.google.com/flights?hl=en&gl=FI&gsas=1#flt=AMS.SYD.2021-03-31.AMSDOH0QR274~DOHSYD1QR906*SYD.HEL.2021-04-13.SYDDOH0QR907~DOHHEL1QR303;c:EUR;e:1;sc:b;sd:1;t:b;tt:m';
-const req_name  = 'zzz'; 
-const req_froms = ['helsi', 'sydn', 'canber', 'helsi'];
-const req_dates = ['22 mar 2021', '14 apr 2021'];
+const params  = ['https://www.google.com/flights?hl=en&gl=FI&gsas=1#flt=AMS.SYD.2021-03-30.AMSDOH0QR274~DOHSYD1QR906*SYD.HEL.2021-04-16.SYDDOH0QR907~DOHHEL1QR303;c:EUR;e:1;sc:b;sd:1;t:b;tt:m', 'seq02'];
+const req_url   = params[0];
+const req_name  = params[1];
+const out_text  = params[2];
 const puppeteer = require('puppeteer');
 const filesave  = require('fs');
 const wait_opts = {waitUntil: 'networkidle0'};
@@ -49,7 +49,8 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
     await page.screenshot({path: './cache/' + req_name + '.png'});
     filesave.writeFile('./cache/' + req_name + '.txt', text, function(err) {}); 
   } catch (e) {	
-    filesave.writeFile('./cache/' + req_name + '.txt', 'error\n'+e, function(err) {}); 
+    const msg = 'error\n' + req_url + '\n' + e;
+    filesave.writeFile('./cache/' + req_name + '.txt', msg, function(err) {}); 
   }
   
   await browser.close()
