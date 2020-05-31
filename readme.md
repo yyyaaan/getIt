@@ -12,4 +12,6 @@ Please note that the NodeJS packages are not included; install separately.
 
 `gflt01` requires dates, destinations, specified filght numbers
 
+`qr01` requires dates and destinations. Results are limited to lowest prices.
+
 
