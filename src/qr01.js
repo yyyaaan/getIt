@@ -5,7 +5,7 @@ const out_text  = params[2];
 const puppeteer = require('puppeteer');
 const filesave  = require('fs');
 const wait_opts = {waitUntil: 'networkidle0'};
-const max_time  = 69000;
+const max_time  = 99000;
 const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36';
 const out_meta  = "\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (new Date().toISOString()) + '</timestamp>\n';
 
@@ -34,7 +34,9 @@ const out_meta  = "\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (new Date().to
     await page.waitForSelector('#outbound_tripDetails1');
     
     await page.click('#flightDetailForm_outbound\\:calendarInitiator_OutBound')
-    await page.waitFor(19000);
+    //await page.waitFor(29000);
+    await page.waitForSelector('.calenderTitle');
+    await page.waitForSelector('span.taxInMonthCal');
 
     // endpoints and extracting
     // try outer/innerHTML/Text, textContent
@@ -43,7 +45,7 @@ const out_meta  = "\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (new Date().to
     const text  = 'output ok' + out_meta + text1;
     
     // saving
-    await page.screenshot({path: './cache/' + req_name + '.png'});
+    await page.screenshot({path: './cache/' + 'qr01_aaa' + '.png'});
     filesave.writeFile('./cache/' + req_name + '.txt', text, function(err) {}); 
   } catch (e) {	
     filesave.writeFile('./cache/' + req_name + '.txt', 'error' + out_meta + e, function(err) {}); 

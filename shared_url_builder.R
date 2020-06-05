@@ -1,6 +1,65 @@
 require(magrittr)
 
 
+# currency exchange -------------------------------------------------------
+
+get_exchange_rate <- function(){
+  ecbxml <- tryCatch(
+    readLines("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml", warn = FALSE),
+    error = function(e) {readLines('./cache/cached_eurofxref.xml'); print("using cached")})
+
+  ecbxml <- grep("Cube currency", ecbxml, value = TRUE) %>% gsub("[^A-Z|0-9|\\.]", "", .) 
+  data.frame(ccy = substr(ecbxml, 2,4), rate = as.numeric(substr(ecbxml, 5, 99)))
+}
+
+
+detect_failed <- function(file_list, move_file = TRUE){
+  #return qurl in second line of file
+  
+  error_url <- sapply(file_list, function(x) {
+    lines <- readLines(x, warn = FALSE)[1:2]
+    flag  <- substr(lines[1], 1, 5) == "error"
+    if(flag && move_file) system(paste("mv", x, "./cache/removed"))
+    return(ifelse(flag, lines[2], ""))
+  })
+  
+  error_url <- error_url[error_url != ""]
+
+  gsub("<[\\/]?\\w+>", "", error_url) #remove html tag
+}
+
+
+archive_files <- function(wildcard, freeup = FALSE){
+  system("rm ./cache/tmp_runjs_*")
+  system("rm ./cache/*.png")
+  if(freeup) system("rm ./cache/removed/*")
+  
+  # wildcard <- "qr01_20200603"
+  sprintf("zip ./cache/z_%s.zip ./cache/%s*", wildcard, wildcard) %>% system()
+  sprintf( "rm ./cache/%s*", wildcard) %>% system()
+}
+
+
+# node js tool ------------------------------------------------------------
+
+util_runjs  <- function(params, jssrc, wait = FALSE){
+  ## jssrc supports both path and contents
+  ## params = c(req_url, req_name)
+  
+  jsLines <- jssrc
+  if(length(jsLines) == 1) jsLines <- readLines(jssrc) # when path read lines
+  out_path = sprintf("./cache/tmp_runjs_%f", as.numeric(Sys.time()))
+  
+  jsLines[1] <- params %>%
+    paste0("'", ., "'", collapse = ", ") %>%
+    paste("const params = [", ., "];")
+  
+  writeLines(jsLines, out_path)
+  system(paste("node", out_path), wait = wait)
+  cat("node job", out_path, "submitted\n")
+}
+
+
 # common base tool --------------------------------------------------------
 
 shared_encode_url <- function(prefix, suffix, params, sep_par = "&", sep_eq = "="){
@@ -54,9 +113,10 @@ flight_url_qatar_2legs <-  function(dates, dests, cabin = "B"){
   }
   
   if(dests[2] == dests[3] && dests[1] == dests[4]){
-    dest_dict <- list(HEL = "Helsinki", ARN = "Stockholm", AMS = "Amsterdam", 
-                      SYD = "Sydney",   CBR = "Canberra",  PER = "Perth",
-                      PVG = "Shanghai")
+    dest_dict <- list(HEL = "Helsinki", ARN = "Stockholm", AMS = "Amsterdam", BRU = "Brussels",  WAW = "Warsaw",   GOT = "Gotenburg",
+                      SYD = "Sydney",   CBR = "Canberra",  ADL = "Adelaide",  MEL = "Melbourne", BNE = "Brisbane", PER = "Perth",
+                      NAN = "Nadi",     NOU = "Noumea",
+                      PVG = "Shanghai", HND = "Haneda",    SIN = "Singapore", TYO = "Tokyo",     HKG = "Hong Kong")
     
     params <- list(widget = "QR",
                    searchType = "F",
@@ -292,10 +352,4 @@ run_example <- function(){
                   city = "Nice") %>% cat()
   
 }
-
-
-   
-# call("xyz", 1,2,3) %>% eval
-
-
 

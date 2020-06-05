@@ -4,6 +4,7 @@ library(rvest)
 # fire the batch ----------------------------------------------------------
 def_path_js <- "./src/gflt01.js"
 
+# moved to shared...
 util_runjs  <- function(jsseq, req_url, req_name, out_text){
   # req_url  <- 'https://www.google.com/flights?hl=en&gl=FI&gsas=1#flt=AMS.SYD.2021-03-30.AMSDOH0QR274~DOHSYD1QR906*SYD.HEL.2021-04-16.SYDDOH0QR907~DOHHEL1QR303;c:EUR;e:1;sc:b;sd:1;t:b;tt:m'
   # req_name <- 'seq02'
