@@ -4,5 +4,6 @@
 .Ruserdata
 cache
 node_modules
+results
 ztest.js
 zzz*

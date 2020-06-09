@@ -1,88 +1,48 @@
-library(rvest)
 source("shared_url_builder.R")
+source("./src/utilities.R")
 library(tidyverse); library(plotly) #only needed for tabluating
+library(rvest)
+
 
 # Start the Batch ---------------------------------------------------------
 
-def_jssrc <- readLines('./src/qr01.js')
-def_break <- 199:299
-n_jobs <- 6
-
-start_batch <- function(loop_deps  = "CPH TLL ARN HEL OSL", 
-                        loop_dests = "SYD CBR ADL MEL", 
-                        loop_dates = "2021-05-09"){
-
+start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL", 
+                       loop_dests = "SYD CBR ADL MEL", 
+                       loop_dates = "2021-05-10",
+                       the_days   = 18){
+  
   ## cross join parameters, then shuffle rows
   param_set <- expand.grid(
     desta = loop_deps  %>% strsplit(" ") %>% unlist(),
     destb = loop_dests %>% strsplit(" ") %>% unlist(),
     destc = loop_dests %>% strsplit(" ") %>% unlist(),
-    destd = loop_deps %>% strsplit(" ") %>% unlist(),
+    destd = loop_deps  %>% strsplit(" ") %>% unlist(),
     ddate = loop_dates %>% strsplit(" ") %>% unlist(),
     stringsAsFactors = FALSE)
   
-  ## run in shuffled order, pause randomly
-  job_counter   <- 0
-  job_submitted <- 0
+  ## build url
+  urls <- character()
   for(i in sample(1:nrow(param_set))){
-    
-    the_url = flight_url_qatar_2legs(
-      dates = c(as.Date(param_set$ddate[i]), as.Date(param_set$ddate[i]) + 18),
-      dests = c(param_set$desta[i], param_set$destb[i], param_set$destc[i], param_set$destd[i]))
-    the_out = Sys.time() %>% as.character() %>% gsub("-|:| ", "", .) %>% paste0("qr01_", .)
-    
-    ### submit job
-    util_runjs(c(the_url, the_out) , def_jssrc)
-    Sys.sleep(1)
-    
-    ### parallel job control
-    job_counter   <- job_counter + 1
-    job_submitted <- job_submitted + 1
-    
-    if(job_counter >= n_jobs){
-      job_counter <- 0
-      cat("Submitted", job_submitted, "Remaining", nrow(param_set) - job_submitted, "\n")
-      Sys.sleep(sample(def_break, 1))
-      system("rm ./cache/tmp_runjs_*")      
-    }
+    urls <- c(urls, flight_url_qatar_2legs(
+      dates = c(as.Date(param_set$ddate[i]), as.Date(param_set$ddate[i]) + the_days),
+      dests = c(param_set$desta[i], param_set$destb[i], param_set$destc[i], param_set$destd[i])))
   }
-  Sys.sleep(sample(def_break, 1))
-  system("rm ./cache/tmp_runjs_*")
-}
-
-start_retry <- function(wildcard = "*.txt"){
-  failed_urls <- list.files("./cache/", wildcard, full.names = T) %>% detect_failed()
-  if(length(failed_urls) == 0) {cat("all ok! nothing to retry :-) \n"); return()}
   
-  job_counter   <- 0
-  job_submitted <- 0
+  ## call batch
+  start_batch(urls, jssrc = './src/qr01.js', file_init = 'qr01')
   
-  for(the_url in sample(failed_urls)){
-    the_out = Sys.time() %>% as.character() %>% gsub("-|:| ", "", .) %>% paste0("qr01_", .)
-    ### submit job
-    util_runjs(c(the_url, the_out) , def_jssrc)
-    Sys.sleep(1)
-    
-    ### parallel job control
-    job_counter   <- job_counter + 1
-    job_submitted <- job_submitted + 1
-    
-    if(job_counter >= n_jobs){
-      job_counter <- 0
-      cat("Submitted", job_submitted, "Remaining", length(failed_urls) - job_submitted, "\n")
-      Sys.sleep(sample(def_break, 1))
-      system("rm ./cache/tmp_runjs_*")      
-    }
-  }
-  Sys.sleep(sample(def_break, 1))
-  system("rm ./cache/tmp_runjs_*")
+  ## retry
+  file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("qr01_", .)
+  start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
+  start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
+  start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
 }
 
 
 # Reporting functions -----------------------------------------------------
 
-get_data <- function(cached_txts){
-  
+get_data_qr01 <- function(cached_txts){
+  ## cached_txts <- list.files("./cache/", "qr01_\\d*.pp", full.names = T)
   ## trimmed output (special chars)
   html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n| ", "", .) %>% gsub("\u00A0", " ", .)
   out_df <- data.frame(); i <- 0
@@ -109,14 +69,14 @@ get_data <- function(cached_txts){
         route = the_combi))
     }
     
-    if(i %% 50 == 0) cat("Processed", i, "files\n")
+    if(i %% 50 == 0) cat("Processed", i, "files\r")
   }
   
   cat("Completed. Total", i, "files.\r")
   return(out_df[out_df$price != "", ])
 }
 
-get_table_plot <- function(df){
+get_table_plot_qr01 <- function(df){
   
   df_all <- (df) %>% 
     left_join(get_exchange_rate(), by = "ccy") %>% # currency exchange
@@ -157,9 +117,10 @@ get_table_plot <- function(df){
 # calling -----------------------------------------------------------------
 
 run_data <- function(){
-  list.files("./cache/", "qr01_2020060\\d*.txt", full.names = T) %>% 
-    get_data() %>%
-    get_table_plot() -> out
+  
+  list.files("./cache/", "qr01_\\d*.pp", full.names = T) %>% 
+    get_data_qr01() %>%
+    get_table_plot_qr01() -> out
   
   out$routedf <- (out$df) %>% 
     group_by(route) %>% 
@@ -168,7 +129,24 @@ run_data <- function(){
               typical     = ceiling(median(combi_min))) %>%
     arrange(best_rate)
   
-  saveRDS(out, file = "zzz_results.rds")
-  archive_files("qr01_20200604")
-}
+  saveRDS(df, paste0("./results/qr01_", format(Sys.Date(), "%Y%m%d"), ".rds"))
   
+  archive_files("qr01_20200606")
+  
+
+  # display only ------------------------------------------------------------
+  (out$df) %>% 
+    group_by(flight) %>% 
+    summarise(best_rate   = ceiling(min(eur)),
+              best_median = ceiling(min(eur)),
+              typical     = ceiling(median(eur))) %>%
+    arrange(best_rate) 
+  
+  (out$df) %>% 
+    group_by(route, ddate) %>% 
+    summarise(best_rate   = ceiling(min(combi_min)),
+              best_median = ceiling(min(combi_min)),
+              typical     = ceiling(median(combi_min))) %>%
+    arrange(best_rate) %>%
+    DT::datatable()
+}

@@ -1,6 +1,7 @@
-const params  = ['https://booking.qatarairways.com/nsp/views/showBooking.action?widget=QR&searchType=F&addTaxToFare=Y&minPurTime=0&upsellCallId=&allowRedemption=Y&flexibleDate=Off&bookingClass=E&tripType=R&selLang=en&fromStation=HEL&from=Helsinki&toStation=CBR&to=Helsinki&departingHidden=29-Mar-2021&departing=2021-03-29&returningHidden=17-Apr-2021&returning=2021-04-17&adults=1&children=0&infants=0&teenager=0&ofw=0&promoCode=&stopOver=NA', 'qr_tmp'];
+const params  = ['https://www.marriott.com/search/default.mi?roomCount=1&numAdultsPerRoom=2&fromDate=12/25/2020&toDate=12/28/2020&destinationAddress.city=Isle+of+Pines%2C+New+Caledonia', 'mrt_tmp'];
 const req_url   = params[0];
 const req_name  = params[1];
+const out_text  = params[2];
 const puppeteer = require('puppeteer');
 const filesave  = require('fs');
 const wait_opts = {waitUntil: 'networkidle0'};
@@ -33,21 +34,26 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   
   try {
     await page.goto(req_url, wait_opts);
-    await page.waitForSelector('#outbound_tripDetails1');
+    await page.click('#advanced-search-form > div > div.l-s-col-4.l-xl-col-2.l-xl-last-col.l-hsearch-find > button');
+    await page.waitForSelector('#main-body-wrapper');
     
-    await page.click('#flightDetailForm_outbound\\:calendarInitiator_OutBound')
-    //await page.waitFor(29000);
-    await page.waitForSelector('.calenderTitle');
-    await page.waitForSelector('span.taxInMonthCal');
-
-    // endpoints and extracting
-    // try outer/innerHTML/Text, textContent
+    // determing availability    
+    var availability = await page.evaluate(() => document.querySelector('div.js-rate-btn-container').innerText);
+    if(availability.toLowerCase().search('sold out') >= 0) {
+      out.push("<flag>Sold Out</flag>");
+    }
+    else {
+      out.push("<flag>Available</flag>");
+      await page.click('a.js-view-rate-btn-link.analytics-click.l-float-right');
+		  await page.waitForSelector('#roomRatesSelectionForm');
+	  	out.push(await page.evaluate(() => document.querySelector('#staydates').outerHTML));
+		  out.push(await page.evaluate(() => document.querySelector('h1').outerHTML));
+		  out.push(await page.evaluate(() => document.querySelector('#room-rate-container').innerHTML));
+    }
     
-    out.push('<exetime>' + (new Date() - exe_start)/1000 + '</exetime>\n');
-    out.push(await page.evaluate(() => document.querySelector('#monthlyCalendarForm\\:calReturnFlow > div.modal-body').innerHTML));
-
     // saving
-    await page.screenshot({path: './cache/a_qr01.png'});
+    await page.screenshot({path: './cache/a_mrt01.png'});
+		out.push('<exetime>' + (new Date() - exe_start)/1000 + '</exetime>\n');
     filesave.writeFile('./cache/' + req_name + '.pp', out.join(), function(err) {}); 
   } catch (e) {	
     out[0] = 'error';
