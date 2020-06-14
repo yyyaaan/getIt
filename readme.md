@@ -13,9 +13,9 @@ Please note that the NodeJS packages are not included; install separately.
 
 `gflt01` requires dates, destinations, specified filght numbers. NOT recommended.
 
-`qr01` requires dates and destinations. Outputs are limited to lowest prices.
+`qr01` requires dates and destinations. Outputs are limited to lowest prices per day per flight segment.
 
-`mrt01` requires dates, hotel metas. Outputss are detailed with conditions and types.
+`mrt01` requires dates, hotel metas. Outputs are detailed with conditions and types. Rates include fees and all taxes as reported. It has be recoginized that the average rate was not correctly reported by mrt, and therefore, the average rate is now a calculated field.
 
 # Routines
 

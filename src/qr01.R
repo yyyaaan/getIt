@@ -1,10 +1,5 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
-library(tidyverse); library(plotly) #only needed for tabluating
-library(rvest)
-
-
-# Start the Batch ---------------------------------------------------------
 
 start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL", 
                        loop_dests = "SYD CBR ADL MEL", 
@@ -39,14 +34,16 @@ start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL",
 }
 
 
-# Reporting functions -----------------------------------------------------
-
 get_data_qr01 <- function(cached_txts){
-  ## cached_txts <- list.files("./cache/", "qr01_\\d*.pp", full.names = T)
-  ## trimmed output (special chars)
+  ## cached_txts <- list.files("./cache/", paste0("qr01_", gsub("-", "", Sys.Date())), full.names = T)
+  
+  ## shorthand functions
   html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n| ", "", .) %>% gsub("\u00A0", " ", .)
+  auto_date    <- . %>% paste(year(today())) %>% dmy() %>% ifelse(. < today(), . + years(1), .) %>% as_date()
+  
   out_df <- data.frame(); i <- 0
   
+  ## mutate on whole dataset is separated outside for-loop
   for(the_file in cached_txts){
     
     the_html  <- read_html(the_file)
@@ -54,9 +51,8 @@ get_data_qr01 <- function(cached_txts){
     ## get data
     i <- i+1
     the_time  <- the_html %>% html_node("timestamp") %>% html_text()
-    the_combi <- the_html %>% html_nodes(".calenderTitle") %>% html_trimmed() %>% paste(collapse = "|")
-    
-    two_routes <- the_html %>% html_nodes(".md-details")
+    the_combo <- the_html %>% html_nodes(".calenderTitle") %>% html_trimmed() %>% paste(collapse = "|")
+    two_routes<- the_html %>% html_nodes(".md-details")
     
     for(the_route in two_routes){
       out_df <- rbind(out_df, data.frame(
@@ -66,87 +62,113 @@ get_data_qr01 <- function(cached_txts){
         ccy   = the_route %>% html_nodes(".taxInMonthCalFnSizeCurCode") %>% html_trimmed(),
         inout = the_route %>% html_node(".destHeading") %>% html_trimmed(),
         ts    = the_time,
-        route = the_combi))
+        route = the_combo))
     }
     
     if(i %% 50 == 0) cat("Processed", i, "files\r")
   }
   
   cat("Completed. Total", i, "files.\r")
-  return(out_df[out_df$price != "", ])
+  
+
+  df <- out_df %>% 
+    filter(price != "") %>% 
+    left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%
+    mutate(inout  = ifelse(inout %in% c("Outboundflight", "Flight1"), "Outbound", "Inbound"),
+           from   = str_split(flight, " ", simplify = T)[,1],
+           to     = str_split(flight, " ", simplify = T)[,2],
+           ddate  = ddate %>% auto_date(),
+           eur    = as.numeric(price)/rate,
+           tss    = ts %>% ymd_hms() %>% date()) %>%
+    select(route, inout, flight, from, to, ddate, eur, price, ccy, tss, ts)
+  return(df)
 }
 
-get_table_plot_qr01 <- function(df){
+
+serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01")){
   
-  df_all <- (df) %>% 
-    left_join(get_exchange_rate(), by = "ccy") %>% # currency exchange
-    transmute(
-      route  = route,
-      flight = flight,
-      from   = str_split(flight, " ", simplify = T)[,1],
-      to     = str_split(flight, " ", simplify = T)[,2],
-      inout  = ifelse(inout %in% c("Outboundflight", "Flight1"), "Outbound", "Inbound"),
-      eur    = as.numeric(price)/ifelse(is.na(rate), 1, rate),
-      ddate  = ddate %>% paste0("2021") %>% parse_date("%e%b%Y")) %>%
-    distinct()
+  cat(get_time_str(), "Serving data results ===\n")
   
-  ## get cheapest combo/total pricing (adding two segments)
+  dfs <- list.files("./results/", "qr01", full.names = TRUE) %>% 
+    sort(decreasing = TRUE) %>% 
+    .[1:n_recent] %>% 
+    as.list() %>% 
+    lapply(function(x) x %>% 
+             readRDS() %>%
+             filter(ddate >= min_date) %>%
+             select(route, ddate, inout, eur, from, to, ts)) 
+
+  df_all <- union_all(dfs[[1]], dfs[[2]])
+  for (i in 3:length(dfs)) {
+    df_all <- union_all(df_all, dfs[[i]])
+  }
   
-  df_return <- df_all %>%
-    group_by(route, inout) %>% 
-    summarize_at("eur", .funs = list(combi_max=max, combi_min=min, combi_med=median)) %>%
-    mutate(inout = ifelse(inout == "Inbound", "Outbound", "Inbound"))
-  
+  ### determing latest records
   df <- df_all %>% 
-    left_join(df_return) %>%
-    mutate(combi_min = combi_min + eur, combi_max = combi_max + eur, combi_med = combi_med + eur) %>%
-    mutate(desc = paste0(route, " €", ceiling(combi_min), "- €", ceiling(combi_med), "- €", ceiling(combi_max)))
+    group_by(route, ddate, inout) %>%
+    summarise(ts = max(ts)) %>%
+    left_join(df_all)
   
-  # plotly ------------------------------------------------------------------
+  remove(df_all, dfs)
   
-  p <- ggplot(df) + 
-    geom_point (aes(ddate, eur, color = from, text = desc), alpha = 0.3, size = 0.3) + 
-    geom_smooth(aes(ddate, eur, color = from), se = FALSE, size = 0.6) + 
-    facet_wrap (inout~to, scales = "free_x", nrow = 2) +
-    theme_minimal()
+  p <- list()
+  for(the_inout in unique(df$inout)){
+    the_df <- df %>% filter(inout == the_inout) %>% mutate(to = paste("to:", to))
+    p[[the_inout]] <- the_df %>%
+      ggplot(aes(ddate, eur, color = from)) + 
+      geom_point (alpha = 0.3, size = 0.3) + 
+      geom_smooth(se = FALSE, size = 0.6) + 
+      facet_grid (~to, scales = "free_x") +
+      theme_minimal() +
+      theme(legend.position = "top") +
+      xlab("") + ylim(900, 3300) + 
+      labs(caption = paste("Latest available", max(the_df$ddate),
+                           "| Refreshed at", substr(max(the_df$ts), 1, 16)))
+  }
   
-  return(list(df = df, p = p))
+  ggsave("/home/yanpan/dashboard/www/fltplot.png", 
+         plot = do.call(gridExtra::grid.arrange, p),
+         width = 12, height = 8, dpi = 220)
+  remove(the_df, p)
+
+  
+  df_combo <- df %>% 
+    filter(inout == "Outbound") %>%
+    select(route, ddate, eur1 = eur) %>%
+    inner_join(df %>%
+                 filter(inout == "Inbound") %>%
+                 select(route, rdate = ddate, eur2 = eur),
+               by = "route") %>%
+    filter(rdate > ddate + 6) %>%
+    mutate(eur = eur1 + eur2)
+  
+  df_best <- df_combo %>%
+    group_by(route) %>%
+    summarise(best   = min(eur),
+              median = median(eur)) %>% 
+    left_join(df_combo, 
+              by = c("route" = "route", "best" = "eur")) %>%
+    select(route, ddate, rdate, best, median) %>%
+    mutate(dates = paste0(format(ddate, "%d%b"), "-", format(rdate, "%d%b")),
+           best  = ceiling(best),
+           median= ceiling(median)) %>%
+    group_by(route, best, median) %>% 
+    summarise(best_dates = toString(dates)) %>%
+    arrange(best)
+  
+  remove(df_combo)
+  saveRDS(df_best, file = "./results/sharing.rds")
+  cat("========= Dashboard results are refreshed =========\n")
 }
 
 
-# calling -----------------------------------------------------------------
-
-run_data <- function(){
+save_data_qr01 <- function(file_pattern_qr01){
+  # file_pattern_qr01 <- paste0("qr01_", gsub("-", "", Sys.Date()))
   
-  list.files("./cache/", "qr01_\\d*.pp", full.names = T) %>% 
-    get_data_qr01() %>%
-    get_table_plot_qr01() -> out
+  df_qr01 <- list.files("./cache/", file_pattern_qr01, full.names = T) %>% get_data_qr01()
+  saveRDS(df_qr01, paste0("./results/", file_pattern_qr01, format(Sys.time(), "_%H%M"), ".rds"))
+  archive_files(file_pattern_qr01)
+  util_bq_upload(df_qr01, table_name = "QR01")
   
-  out$routedf <- (out$df) %>% 
-    group_by(route) %>% 
-    summarise(best_rate   = ceiling(min(combi_min)),
-              best_median = ceiling(min(combi_min)),
-              typical     = ceiling(median(combi_min))) %>%
-    arrange(best_rate)
-  
-  saveRDS(df, paste0("./results/qr01_", format(Sys.Date(), "%Y%m%d"), ".rds"))
-  
-  archive_files("qr01_20200606")
-  
-
-  # display only ------------------------------------------------------------
-  (out$df) %>% 
-    group_by(flight) %>% 
-    summarise(best_rate   = ceiling(min(eur)),
-              best_median = ceiling(min(eur)),
-              typical     = ceiling(median(eur))) %>%
-    arrange(best_rate) 
-  
-  (out$df) %>% 
-    group_by(route, ddate) %>% 
-    summarise(best_rate   = ceiling(min(combi_min)),
-              best_median = ceiling(min(combi_min)),
-              typical     = ceiling(median(combi_min))) %>%
-    arrange(best_rate) %>%
-    DT::datatable()
+  suppressMessages(serve_latest_results())
 }

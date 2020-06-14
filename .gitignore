@@ -2,6 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.log
 cache
 node_modules
 results
