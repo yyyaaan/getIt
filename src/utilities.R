@@ -54,7 +54,40 @@ show_exetime <- function(by_key = FALSE){
 }
 
 
-# BigQuery ----------------------------------------------------------------
+show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
+  logs <- readLines(log_file)
+  
+  if(clean_log){
+    rid <- grep("nodes submitted|processed|cannot|nothing|NULL", logs, ignore.case = TRUE)
+    writeLines(logs[-rid], log_file)
+  }
+  
+  logs <- grep(format(Sys.Date(), "%Y-%m-%d"), logs, value = TRUE)
+  
+  task   <- grep("worker", logs, ignore.case = TRUE, value = TRUE) %>% 
+    substr(40, 999) %>% 
+    gsub("\\d|-|=", "", .) %>% gsub("  ", "", .) %>% trimws()
+  tstart <- grep("worker",   logs, ignore.case = TRUE, value = TRUE) %>% substr(1, 19) %>% ymd_hms()
+  tend   <- grep("bigquery", logs, ignore.case = TRUE, value = TRUE) %>% substr(1, 19) %>% ymd_hms()
+  
+  df <- data.frame(task_name = task, time_elapsed = as.duration(tstart %--% tend) / dminutes(1)) 
+  print(df)
+  
+  paste(df$task_name, round(df$time_elapsed, 1)) %>% paste(collapse = "; ") %>% logger("Task summary:", .)
+}
+
+
+# bigquery & logger -------------------------------------------------------
+
+logger <- function(..., log_name = "getIt"){
+
+  text = paste(..., collapse = " ")
+  if(grepl("start", tolower(text))) cat("=\n")
+  
+  cat(get_time_str(), text, ifelse(grepl("completed", tolower(text)),"=========\n", "\n"))
+  # SEVERITY in DEFAULT, DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
+  paste("/snap/bin/gcloud logging write", log_name, "'", text, "' --severity=INFO") %>% system()
+}
 
 util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore"){
   bq_deauth()
@@ -68,7 +101,7 @@ util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore")
                     create_disposition = "CREATE_IF_NEEDED",
                     write_disposition  = "WRITE_APPEND")
   
-  cat(get_time_str(), "=== BigQuery Upload Completed for", table_name, "===\n")
+  logger("BigQuery Upload Completed for", table_name)
 }
 
 # currency exchange -------------------------------------------------------
@@ -151,85 +184,13 @@ util_runjs  <- function(params, jssrc, wait = FALSE){
   # cat("node", out_path, "submitted\r")
 }
 
-start_batch2 <- function(urls, jssrc, file_init = "noname"){
-  ## outname is decided upon jssrc
-  ## shuffled running order
-  job_counter <- job_submitted <- 0
-  
-  ## determining skipping using to_skip.rds
-  if(file.exists("./cache/to_skip.rds")){
-    tmp <- length(urls)
-    urls <- setdiff(urls, readRDS("./cache/to_skip.rds"))
-    cat(get_time_str(), "Important:", tmp-length(urls), "will be skipped per defined by to_skip\n")
-  }
-
-  for(the_url in sample(urls)){
-    
-    the_out = Sys.time() %>% as.character() %>% gsub("-|:| ", "", .) %>% paste0(file_init, "_", .)
-    
-    ### submit job
-    util_runjs(c(the_url, the_out) , jssrc)
-    Sys.sleep(1)
-    
-    ### parallel job control
-    job_counter   <- job_counter + 1
-    job_submitted <- job_submitted + 1
-    
-    if(job_counter >= def_n_jobs){
-      job_counter <- 0
-      cat(get_time_str(), "Nodes submitted", job_submitted, "Remaining", length(urls) - job_submitted, "     \n")
-      Sys.sleep(sample(def_break, 1))
-      system("rm ./cache/tmp_runjs_*")      
-    }
-  }
-  
-  cat(get_time_str(), "Job completed.========= ========= =========\n")
-  Sys.sleep(sample(def_break, 1))
-  if(length(list.files("./cache/", "tmp_runjs"))) system("rm ./cache/tmp_runjs_*")
-  show_exetime()
-}
-
-start_retry2 <- function(wildcard, jssrc){
-  ## wildcard must include initials to configure correct output name "qr01_*"
-  
-  failed_urls <- list.files("./cache/", wildcard, full.names = T) %>% detect_failed()
-  if(length(failed_urls) == 0) {cat("all ok! nothing to retry :-) \n"); return()}
-  cat(get_time_str(), "Retry failed jobs. Total to retry", length(failed_urls), "\n")
-
-  file_initial  <- strsplit(wildcard, "_")[[1]][1]
-  job_counter   <- 0
-  job_submitted <- 0
-  
-  for(the_url in sample(failed_urls)){
-    the_out = Sys.time() %>% as.character() %>% gsub("-|:| ", "", .) %>% paste0(file_initial, "_", .)
-    ### submit job
-    util_runjs(c(the_url, the_out) , jssrc)
-    Sys.sleep(1)
-    
-    ### parallel job control
-    job_counter   <- job_counter + 1
-    job_submitted <- job_submitted + 1
-    
-    if(job_counter >= def_n_jobs){
-      job_counter <- 0
-      cat(get_time_str(), "Nodes submitted", job_submitted, "Remaining", length(failed_urls) - job_submitted, "\n")
-      Sys.sleep(sample(def_break, 1))
-      system("rm ./cache/tmp_runjs_*")      
-    }
-  }
-  
-  Sys.sleep(sample(def_break, 1))
-  system("rm ./cache/tmp_runjs_*")
-  cat(get_time_str(), "Retries done ========= ========= =========\n")
-}
-
-start_batch <- function(urls, jssrc, file_init = "noname"){
+start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE){
   ## outname is decided upon jssrc
   ## shuffled running order
   
   job_submitted <- 0
   
-  cat("Info: the interval is set to be", min(def_interval), "-", max(def_interval), "seconds\n")
+  if(verbose) cat("Info: the interval is set to be", min(def_interval), "-", max(def_interval), "seconds\n")
   ## determining skipping using to_skip.rds
   if(file.exists("./cache/to_skip.rds")){
     tmp <- length(urls)
@@ -254,7 +215,7 @@ start_batch <- function(urls, jssrc, file_init = "noname"){
       
       cat(get_time_str(), 
           "Nodes submitted", job_submitted, 
-          "Completed", job_completed,
+          ifelse(verbose, paste("Completed", job_completed), "-"),
           "Remaining", length(urls) - job_submitted, "\n")
       
       ### wait more if too many in progress
@@ -266,10 +227,10 @@ start_batch <- function(urls, jssrc, file_init = "noname"){
     }
   }
   
-  cat(get_time_str(), "Job completed.========= ========= =========\n")
   Sys.sleep(sample(def_interval, 1))
+  if(verbose) cat(get_time_str(), "Job completed.========= ========= =========\n")
   if(length(list.files("./cache/", "tmp_runjs"))) system("rm ./cache/tmp_runjs_*")
-  show_exetime()
+  if(verbose) show_exetime()
 }
 
 start_retry <- function(wildcard, jssrc){
@@ -280,5 +241,5 @@ start_retry <- function(wildcard, jssrc){
   cat(get_time_str(), "Retry failed jobs. Total to retry", length(failed_urls), "\n")
   
   file_initial  <- strsplit(wildcard, "_")[[1]][1]
-  start_batch(failed_urls, jssrc, file_initial)
+  start_batch(failed_urls, jssrc, file_initial, FALSE)
 }

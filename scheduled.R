@@ -49,40 +49,43 @@ mrt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% forma
 
 # main pgm (no need to change below) --------------------------------------
 
-cat(get_time_str(), "Fetch latest currency exchange rate from ECB\n")
+logger("updating currency exchange rate through ECB")
 get_exchange_rate()
 
 
 # current topic -----------------------------------------------------------
 
-cat(get_time_str(), "Worker started for QR01 (current topic)", qr_special ,") ===\n")
-start_qr01(qr_loop_deps2, qr_loop_dests, qr_special, qr_the_days)
-save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
+# logger("Worker started for QR01 (current topic)", qr_special)
+# start_qr01(qr_loop_deps2, qr_loop_dests, qr_special, qr_the_days)
+# save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 
 
 # defined series (not daily) ----------------------------------------------
 
-cat(get_time_str(), "Worker started for QR01 with controller", qr_oooo_dates, "===\n")
+logger("Worker started for QR01 with controller", qr_oooo_dates)
 start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 
-cat(get_time_str(),"Worker started for MRT01 with controller", mrt_oooo_dates, "===\n")
+
+logger("Worker started for MRT01 with controller", mrt_oooo_dates)
 start_mrt01(mrt_oooo_dates, mrt_loop_nights, mrt_loop_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 
 
 # follow-up series --------------------------------------------------------
 
-cat(get_time_str(), "Worker started for QR01 (follow-up", qr_fu_dates ,") ===\n")
+logger("Worker started for QR01 follow-up", qr_fu_dates)
 start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 
-cat(get_time_str(), "Worker started for MRT01 (follow-up", mrt_fu_dates ,") ===\n")
+logger("Worker started for MRT01 follow-up", mrt_fu_dates)
 start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 
 
 # all completed -----------------------------------------------------------
 
-cat(get_time_str(), "========= all tasks completed for today =========\n")
-cat(rep("=", 39), "\n", "\n", rep("=", 39), "\n")
+logger("scheduled daily tasks completed")
+show_tasktime()
+cat(rep("=", 39), "\n", rep("=", 39), "\n")
+

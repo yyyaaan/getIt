@@ -1,276 +1,55 @@
 2020-06-14 03:03:08 Fetch latest currency exchange rate from ECB
 2020-06-14 03:03:08 Worker started for QR01 with controller 2021-01-22 ===
-2020-06-14 03:03:15 Nodes submitted 6 Remaining 394      
-2020-06-14 03:06:14 Nodes submitted 12 Remaining 388      
-2020-06-14 03:09:21 Nodes submitted 18 Remaining 382      
-2020-06-14 03:12:34 Nodes submitted 24 Remaining 376      
-2020-06-14 03:15:29 Nodes submitted 30 Remaining 370      
-2020-06-14 03:18:23 Nodes submitted 36 Remaining 364      
-2020-06-14 03:21:19 Nodes submitted 42 Remaining 358      
-2020-06-14 03:24:21 Nodes submitted 48 Remaining 352      
-2020-06-14 03:27:21 Nodes submitted 54 Remaining 346      
-2020-06-14 03:30:39 Nodes submitted 60 Remaining 340      
-2020-06-14 03:33:48 Nodes submitted 66 Remaining 334      
-2020-06-14 03:36:42 Nodes submitted 72 Remaining 328      
-2020-06-14 03:39:52 Nodes submitted 78 Remaining 322      
-2020-06-14 03:43:13 Nodes submitted 84 Remaining 316      
-2020-06-14 03:46:21 Nodes submitted 90 Remaining 310      
-2020-06-14 03:49:23 Nodes submitted 96 Remaining 304      
-2020-06-14 03:52:21 Nodes submitted 102 Remaining 298      
-2020-06-14 03:55:35 Nodes submitted 108 Remaining 292      
-2020-06-14 03:58:51 Nodes submitted 114 Remaining 286      
-2020-06-14 04:02:03 Nodes submitted 120 Remaining 280      
-2020-06-14 04:04:59 Nodes submitted 126 Remaining 274      
-2020-06-14 04:07:54 Nodes submitted 132 Remaining 268      
-2020-06-14 04:11:14 Nodes submitted 138 Remaining 262      
-2020-06-14 04:14:31 Nodes submitted 144 Remaining 256      
-2020-06-14 04:17:46 Nodes submitted 150 Remaining 250      
-2020-06-14 04:21:05 Nodes submitted 156 Remaining 244      
-2020-06-14 04:24:19 Nodes submitted 162 Remaining 238      
-2020-06-14 04:27:37 Nodes submitted 168 Remaining 232      
-2020-06-14 04:30:41 Nodes submitted 174 Remaining 226      
-2020-06-14 04:33:47 Nodes submitted 180 Remaining 220      
-2020-06-14 04:36:58 Nodes submitted 186 Remaining 214      
-2020-06-14 04:40:18 Nodes submitted 192 Remaining 208      
-2020-06-14 04:43:11 Nodes submitted 198 Remaining 202      
-2020-06-14 04:46:17 Nodes submitted 204 Remaining 196      
-2020-06-14 04:49:14 Nodes submitted 210 Remaining 190      
-2020-06-14 04:52:24 Nodes submitted 216 Remaining 184      
-2020-06-14 04:55:27 Nodes submitted 222 Remaining 178      
-2020-06-14 04:58:19 Nodes submitted 228 Remaining 172      
-2020-06-14 05:01:34 Nodes submitted 234 Remaining 166      
-2020-06-14 05:04:52 Nodes submitted 240 Remaining 160      
-2020-06-14 05:07:55 Nodes submitted 246 Remaining 154      
-2020-06-14 05:10:56 Nodes submitted 252 Remaining 148      
-2020-06-14 05:14:06 Nodes submitted 258 Remaining 142      
-2020-06-14 05:17:10 Nodes submitted 264 Remaining 136      
-2020-06-14 05:20:19 Nodes submitted 270 Remaining 130      
-2020-06-14 05:23:17 Nodes submitted 276 Remaining 124      
-2020-06-14 05:26:38 Nodes submitted 282 Remaining 118      
-2020-06-14 05:29:34 Nodes submitted 288 Remaining 112      
-2020-06-14 05:32:37 Nodes submitted 294 Remaining 106      
-2020-06-14 05:35:47 Nodes submitted 300 Remaining 100      
-2020-06-14 05:38:54 Nodes submitted 306 Remaining 94      
-2020-06-14 05:42:00 Nodes submitted 312 Remaining 88      
-2020-06-14 05:44:57 Nodes submitted 318 Remaining 82      
-2020-06-14 05:48:08 Nodes submitted 324 Remaining 76      
-2020-06-14 05:51:22 Nodes submitted 330 Remaining 70      
-2020-06-14 05:54:24 Nodes submitted 336 Remaining 64      
-2020-06-14 05:57:29 Nodes submitted 342 Remaining 58      
-2020-06-14 06:00:48 Nodes submitted 348 Remaining 52      
-2020-06-14 06:03:41 Nodes submitted 354 Remaining 46      
-2020-06-14 06:07:06 Nodes submitted 360 Remaining 40      
-2020-06-14 06:10:22 Nodes submitted 366 Remaining 34      
-2020-06-14 06:13:47 Nodes submitted 372 Remaining 28      
-2020-06-14 06:16:56 Nodes submitted 378 Remaining 22      
-2020-06-14 06:20:02 Nodes submitted 384 Remaining 16      
-2020-06-14 06:23:13 Nodes submitted 390 Remaining 10      
-2020-06-14 06:26:38 Nodes submitted 396 Remaining 4      
 2020-06-14 06:29:42 Job completed.========= ========= =========
 Average runing time in seconds
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   24.81   79.72   88.45   88.58   97.94  129.79 
 2020-06-14 06:32:50 Retry failed jobs. Total to retry 12 
-2020-06-14 03:32:56 Nodes submitted 6 Remaining 6 
-2020-06-14 03:35:50 Nodes submitted 12 Remaining 0 
-rm: cannot remove './cache/tmp_runjs_*': No such file or directory
 2020-06-14 06:41:49 Retries done ========= ========= =========
 2020-06-14 06:41:49 Retry failed jobs. Total to retry 8 
-2020-06-14 03:41:55 Nodes submitted 6 Remaining 2 
 2020-06-14 06:48:06 Retries done ========= ========= =========
 2020-06-14 06:48:06 Retry failed jobs. Total to retry 7 
-2020-06-14 03:48:12 Nodes submitted 6 Remaining 1 
 2020-06-14 06:53:53 Retries done ========= ========= =========
-Processed 50 files
-Processed 100 files
-Processed 150 files
-Processed 200 files
-Processed 250 files
-Processed 300 files
-Processed 350 files
-Processed 400 files
 Completed. Total 400 files.
 2020-06-14 06:54:19 === BigQuery Upload Completed for QR01 ===
 2020-06-14 06:54:19 Serving data results ===
 ========= Dashboard results are refreshed =========
 2020-06-14 06:54:21 Worker started for MRT01 with controller 2021-01-16 2021-01-31 ===
-2020-06-14 06:54:27 Nodes submitted 6 Remaining 122      
-2020-06-14 06:57:33 Nodes submitted 12 Remaining 116      
-2020-06-14 07:00:42 Nodes submitted 18 Remaining 110      
-2020-06-14 07:04:04 Nodes submitted 24 Remaining 104      
-2020-06-14 07:07:03 Nodes submitted 30 Remaining 98      
-2020-06-14 07:10:22 Nodes submitted 36 Remaining 92      
-2020-06-14 07:13:34 Nodes submitted 42 Remaining 86      
-2020-06-14 07:16:27 Nodes submitted 48 Remaining 80      
-2020-06-14 07:19:42 Nodes submitted 54 Remaining 74      
-2020-06-14 07:23:07 Nodes submitted 60 Remaining 68      
-2020-06-14 07:26:29 Nodes submitted 66 Remaining 62      
-2020-06-14 07:29:22 Nodes submitted 72 Remaining 56      
-2020-06-14 07:32:25 Nodes submitted 78 Remaining 50      
-2020-06-14 07:35:21 Nodes submitted 84 Remaining 44      
-2020-06-14 07:38:20 Nodes submitted 90 Remaining 38      
-2020-06-14 07:41:25 Nodes submitted 96 Remaining 32      
-2020-06-14 07:44:50 Nodes submitted 102 Remaining 26      
-2020-06-14 07:48:06 Nodes submitted 108 Remaining 20      
-2020-06-14 07:51:15 Nodes submitted 114 Remaining 14      
-2020-06-14 07:54:29 Nodes submitted 120 Remaining 8      
-2020-06-14 07:57:25 Nodes submitted 126 Remaining 2      
 2020-06-14 08:00:34 Job completed.========= ========= =========
 Average runing time in seconds
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   24.81   96.16  108.86  102.33  112.43  128.41 
 2020-06-14 08:03:26 Retry failed jobs. Total to retry 1 
 2020-06-14 08:06:30 Retries done ========= ========= =========
-all ok! nothing to retry :-) 
-all ok! nothing to retry :-) 
-NULL
-Processed 50 files ( Sold out 15 )
 Completed. Total 128 files (fetched 96 unavailable 32 ) 
 2020-06-14 08:07:29 === BigQuery Upload Completed for MRT01 ===
 2020-06-14 08:07:29 Worker started for QR01 (follow-up 2020-09-29 2020-09-14 2020-08-30 2020-08-15 2020-07-31 ) ===
-2020-06-14 08:07:35 Nodes submitted 6 Remaining 314      
-2020-06-14 08:10:46 Nodes submitted 12 Remaining 308      
-2020-06-14 08:13:48 Nodes submitted 18 Remaining 302      
-2020-06-14 08:17:07 Nodes submitted 24 Remaining 296      
-2020-06-14 08:20:13 Nodes submitted 30 Remaining 290      
-2020-06-14 08:23:27 Nodes submitted 36 Remaining 284      
-2020-06-14 08:26:25 Nodes submitted 42 Remaining 278      
-2020-06-14 08:29:35 Nodes submitted 48 Remaining 272      
-2020-06-14 08:32:27 Nodes submitted 54 Remaining 266      
-2020-06-14 08:35:23 Nodes submitted 60 Remaining 260      
-2020-06-14 08:38:27 Nodes submitted 66 Remaining 254      
-2020-06-14 08:41:46 Nodes submitted 72 Remaining 248      
-2020-06-14 08:44:57 Nodes submitted 78 Remaining 242      
-2020-06-14 08:48:00 Nodes submitted 84 Remaining 236      
-2020-06-14 08:51:18 Nodes submitted 90 Remaining 230      
-2020-06-14 08:54:21 Nodes submitted 96 Remaining 224      
-2020-06-14 08:57:39 Nodes submitted 102 Remaining 218      
-2020-06-14 09:00:32 Nodes submitted 108 Remaining 212      
-2020-06-14 09:03:56 Nodes submitted 114 Remaining 206      
-2020-06-14 09:07:18 Nodes submitted 120 Remaining 200      
-2020-06-14 09:10:23 Nodes submitted 126 Remaining 194      
-2020-06-14 09:13:44 Nodes submitted 132 Remaining 188      
-2020-06-14 09:16:49 Nodes submitted 138 Remaining 182      
-2020-06-14 09:20:14 Nodes submitted 144 Remaining 176      
-2020-06-14 09:23:30 Nodes submitted 150 Remaining 170      
-2020-06-14 09:26:51 Nodes submitted 156 Remaining 164      
-2020-06-14 09:29:45 Nodes submitted 162 Remaining 158      
-2020-06-14 09:33:09 Nodes submitted 168 Remaining 152      
-2020-06-14 09:36:24 Nodes submitted 174 Remaining 146      
-2020-06-14 09:39:35 Nodes submitted 180 Remaining 140      
-2020-06-14 09:42:47 Nodes submitted 186 Remaining 134      
-2020-06-14 09:45:55 Nodes submitted 192 Remaining 128      
-2020-06-14 09:48:48 Nodes submitted 198 Remaining 122      
-2020-06-14 09:51:46 Nodes submitted 204 Remaining 116      
-2020-06-14 09:55:08 Nodes submitted 210 Remaining 110      
-2020-06-14 09:58:30 Nodes submitted 216 Remaining 104      
-2020-06-14 10:01:23 Nodes submitted 222 Remaining 98      
-2020-06-14 10:04:36 Nodes submitted 228 Remaining 92      
-2020-06-14 10:08:00 Nodes submitted 234 Remaining 86      
-2020-06-14 10:10:58 Nodes submitted 240 Remaining 80      
-2020-06-14 10:13:51 Nodes submitted 246 Remaining 74      
-2020-06-14 10:17:06 Nodes submitted 252 Remaining 68      
-2020-06-14 10:20:14 Nodes submitted 258 Remaining 62      
-2020-06-14 10:23:24 Nodes submitted 264 Remaining 56      
-2020-06-14 10:26:30 Nodes submitted 270 Remaining 50      
-2020-06-14 10:29:33 Nodes submitted 276 Remaining 44      
-2020-06-14 10:32:30 Nodes submitted 282 Remaining 38      
-2020-06-14 10:35:45 Nodes submitted 288 Remaining 32      
-2020-06-14 10:38:45 Nodes submitted 294 Remaining 26      
-2020-06-14 10:42:07 Nodes submitted 300 Remaining 20      
-2020-06-14 10:45:33 Nodes submitted 306 Remaining 14      
-2020-06-14 10:48:55 Nodes submitted 312 Remaining 8      
-2020-06-14 10:51:55 Nodes submitted 318 Remaining 2      
 2020-06-14 10:55:14 Job completed.========= ========= =========
 Average runing time in seconds
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   24.81   74.28   81.50   80.97   88.08  117.55 
 2020-06-14 10:58:10 Retry failed jobs. Total to retry 12 
-2020-06-14 07:58:17 Nodes submitted 6 Remaining 6 
-2020-06-14 08:01:28 Nodes submitted 12 Remaining 0 
-rm: cannot remove './cache/tmp_runjs_*': No such file or directory
 2020-06-14 11:07:48 Retries done ========= ========= =========
 2020-06-14 11:07:48 Retry failed jobs. Total to retry 8 
-2020-06-14 08:07:55 Nodes submitted 6 Remaining 2 
 2020-06-14 11:13:36 Retries done ========= ========= =========
 2020-06-14 11:13:36 Retry failed jobs. Total to retry 8 
-2020-06-14 08:13:42 Nodes submitted 6 Remaining 2 
 2020-06-14 11:19:56 Retries done ========= ========= =========
-Processed 50 files
-Processed 100 files
-Processed 150 files
-Processed 200 files
-Processed 250 files
-Processed 300 files
 Completed. Total 320 files.
 2020-06-14 11:20:18 === BigQuery Upload Completed for QR01 ===
 2020-06-14 11:20:18 Serving data results========= Dashboard results are refreshed =========
 2020-06-14 11:20:19 Worker started for MRT01 (follow-up 2020-06-19 2020-09-12 ) ===
-2020-06-14 11:20:25 Nodes submitted 6 Remaining 166      
-2020-06-14 11:23:35 Nodes submitted 12 Remaining 160      
-2020-06-14 11:26:36 Nodes submitted 18 Remaining 154      
-2020-06-14 11:29:53 Nodes submitted 24 Remaining 148      
-2020-06-14 11:32:55 Nodes submitted 30 Remaining 142      
-2020-06-14 11:35:51 Nodes submitted 36 Remaining 136      
-2020-06-14 11:39:05 Nodes submitted 42 Remaining 130      
-2020-06-14 11:41:59 Nodes submitted 48 Remaining 124      
-2020-06-14 11:45:15 Nodes submitted 54 Remaining 118      
-2020-06-14 11:48:11 Nodes submitted 60 Remaining 112      
-2020-06-14 11:51:34 Nodes submitted 66 Remaining 106      
-2020-06-14 11:54:38 Nodes submitted 72 Remaining 100      
-2020-06-14 11:57:50 Nodes submitted 78 Remaining 94      
-2020-06-14 12:01:04 Nodes submitted 84 Remaining 88      
-2020-06-14 12:04:29 Nodes submitted 90 Remaining 82      
-2020-06-14 12:07:28 Nodes submitted 96 Remaining 76      
-2020-06-14 12:10:46 Nodes submitted 102 Remaining 70      
-2020-06-14 12:13:54 Nodes submitted 108 Remaining 64      
-2020-06-14 12:17:13 Nodes submitted 114 Remaining 58      
-2020-06-14 12:20:35 Nodes submitted 120 Remaining 52      
-2020-06-14 12:23:59 Nodes submitted 126 Remaining 46      
-2020-06-14 12:27:18 Nodes submitted 132 Remaining 40      
-2020-06-14 12:30:33 Nodes submitted 138 Remaining 34      
-2020-06-14 12:33:36 Nodes submitted 144 Remaining 28      
-2020-06-14 12:36:39 Nodes submitted 150 Remaining 22      
-2020-06-14 12:39:47 Nodes submitted 156 Remaining 16      
-2020-06-14 12:42:47 Nodes submitted 162 Remaining 10      
-2020-06-14 12:45:59 Nodes submitted 168 Remaining 4      
 2020-06-14 12:48:55 Job completed.========= ========= =========
 Average runing time in seconds
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   24.81  106.48  112.71  107.82  117.47  129.33 
 2020-06-14 12:52:04 Retry failed jobs. Total to retry 7 
-2020-06-14 09:52:10 Nodes submitted 6 Remaining 1 
 2020-06-14 12:58:08 Retries done ========= ========= =========
-all ok! nothing to retry :-) 
-all ok! nothing to retry :-) 
-NULL
-Processed 50 files ( Sold out 9 )
-Processed 100 files ( Sold out 20 )
 Completed. Total 172 files (fetched 147 unavailable 25 ) 
 2020-06-14 12:58:47 === BigQuery Upload Completed for MRT01 ===
 2020-06-14 12:58:47 ========= all tasks completed for today =========
 2020-06-14 18:08:05 Worker started for QR01 (current topic) 2021-05-15 ) ===
 Info: the interval is set to be 20 - 35 seconds
 2020-06-14 18:08:06 Important: 201 will be skipped per defined by to_skip
-2020-06-14 18:12:43 Nodes submitted 10 Completed 210 Remaining 189 
-2020-06-14 18:17:41 Nodes submitted 20 Completed 221 Remaining 179 
-2020-06-14 18:22:37 Nodes submitted 30 Completed 231 Remaining 169 
-2020-06-14 18:27:00 Nodes submitted 40 Completed 240 Remaining 159 
-2020-06-14 18:31:37 Nodes submitted 50 Completed 251 Remaining 149 
-2020-06-14 18:36:12 Nodes submitted 60 Completed 260 Remaining 139 
-2020-06-14 18:40:54 Nodes submitted 70 Completed 270 Remaining 129 
-2020-06-14 18:45:29 Nodes submitted 80 Completed 280 Remaining 119 
-2020-06-14 18:49:59 Nodes submitted 90 Completed 290 Remaining 109 
-2020-06-14 18:54:18 Nodes submitted 100 Completed 299 Remaining 99 
-2020-06-14 18:58:42 Nodes submitted 110 Completed 310 Remaining 89 
-2020-06-14 19:03:13 Nodes submitted 120 Completed 321 Remaining 79 
-2020-06-14 19:07:57 Nodes submitted 130 Completed 331 Remaining 69 
-2020-06-14 19:12:24 Nodes submitted 140 Completed 340 Remaining 59 
-2020-06-14 19:17:22 Nodes submitted 150 Completed 349 Remaining 49 
-2020-06-14 19:22:11 Nodes submitted 160 Completed 361 Remaining 39 
-2020-06-14 19:26:35 Nodes submitted 170 Completed 370 Remaining 29 
-2020-06-14 19:30:46 Nodes submitted 180 Completed 381 Remaining 19 
-2020-06-14 19:35:39 Nodes submitted 190 Completed 391 Remaining 9 
 2020-06-14 19:39:31 Job completed.========= ========= =========
 Average runing time in seconds
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -296,13 +75,6 @@ Info: the interval is set to be 20 - 35 seconds
 Average runing time in seconds
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
   33.05   50.12   55.73   56.19   62.11   98.11 
-Processed 50 files
-Processed 100 files
-Processed 150 files
-Processed 200 files
-Processed 250 files
-Processed 300 files
-Processed 350 files
 Completed. Total 396 files.
 2020-06-14 19:47:02 === BigQuery Upload Completed for QR01 ===
 2020-06-14 19:47:02 Serving data results ===
@@ -314,3 +86,188 @@ Warning messages:
 4: Removed 14 rows containing missing values (geom_point). 
 2020-06-14 19:47:07 ========= all tasks completed for today =========
 = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+2020-06-15 03:03:03 Worker started for MRT01 with controller 2020-12-01 2020-12-15 ===
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 03:57:40 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.89   17.84   23.09   22.68   25.58   38.47 
+2020-06-15 03:58:15 Retry failed jobs. Total to retry 3 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 03:59:46 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.89   17.86   23.30   22.76   25.70   38.47 
+Completed. Total 120 files (fetched 60 unavailable 60 ) 
+2020-06-15 04:00:54 === BigQuery Upload Completed for MRT01 ===
+2020-06-15 04:00:54 Worker started for QR01 (follow-up 2021-05-16 2021-05-01 2021-04-16 2021-04-01 2021-03-17 ) ===
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 06:25:58 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  32.29   41.00   46.39   46.43   50.98   79.39 
+2020-06-15 06:26:26 Retry failed jobs. Total to retry 2 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 06:27:26 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  32.29   40.97   46.34   46.40   50.98   79.39 
+Completed. Total 320 files.
+2020-06-15 06:28:12 === BigQuery Upload Completed for QR01 ===
+2020-06-15 06:28:12 Serving data results ===
+========= Dashboard results are refreshed =========
+Warning messages:
+1: Removed 156 rows containing non-finite values (stat_smooth). 
+2: Removed 156 rows containing missing values (geom_point). 
+3: Removed 24 rows containing non-finite values (stat_smooth). 
+4: Removed 24 rows containing missing values (geom_point). 
+2020-06-15 06:28:17 Worker started for MRT01 (follow-up 2021-03-05 2021-05-29 ) ===
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 07:45:18 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  20.01   21.34   21.95   22.44   23.04   31.26 
+2020-06-15 07:45:48 Retry failed jobs. Total to retry 3 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 07:47:17 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  20.01   21.32   21.93   22.45   23.04   31.26 
+2020-06-15 07:47:50 Retry failed jobs. Total to retry 1 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 07:48:12 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  20.01   21.32   21.91   22.44   23.04   31.26 
+Completed. Total 172 files (fetched 172 unavailable 0 ) 
+2020-06-15 07:49:49 === BigQuery Upload Completed for MRT01 ===
+2020-06-15 07:49:49 ========= all tasks completed for today =========
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+ 
+ = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+2020-06-15 09:03:00 Fetch latest currency exchange rate from ECB
+2020-06-15 09:03:00 Worker started for QR01 with controller 2020-12-08 ===
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 12:08:31 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  35.74   51.53   57.27   56.45   61.52   78.84 
+2020-06-15 12:09:08 Retry failed jobs. Total to retry 13 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 12:15:51 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  35.74   51.53   57.27   56.45   61.52   78.84 
+2020-06-15 12:16:18 Retry failed jobs. Total to retry 9 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 12:20:19 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  35.74   51.62   57.33   56.51   61.53   78.84 
+2020-06-15 12:20:46 Retry failed jobs. Total to retry 8 
+Info: the interval is set to be 20 - 35 seconds
+2020-06-15 12:24:26 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  35.74   51.62   57.33   56.51   61.53   78.84 
+Completed. Total 397 files.
+2020-06-15 12:25:38 === BigQuery Upload Completed for QR01 ===
+2020-06-15 12:25:38 Serving data results ===
+========= Dashboard results are refreshed =========
+Warning messages:
+1: Removed 156 rows containing non-finite values (stat_smooth). 
+2: Removed 156 rows containing missing values (geom_point). 
+3: Removed 24 rows containing non-finite values (stat_smooth). 
+4: Removed 24 rows containing missing values (geom_point). 
+2020-06-15 12:25:45 ========= all tasks completed for today =========
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+2020-06-16 03:03:07 updating currency exchange rate through ECB 
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+=
+2020-06-16 03:03:07 Worker started for QR01 with controller 2020-12-23 
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+Info: the interval is set to be 20 - 35 seconds
+2020-06-16 06:06:29 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  37.18   52.96   58.91   58.83   63.36  110.18 
+2020-06-16 06:06:30 Retry failed jobs. Total to retry 79 
+2020-06-16 06:42:56 Retry failed jobs. Total to retry 66 
+2020-06-16 07:12:22 Retry failed jobs. Total to retry 58 
+Completed. Total 397 files.
+2020-06-16 07:39:11 BigQuery Upload Completed for QR01 =========
+sh: 1: gcloud: not found
+2020-06-16 07:39:11 Serving data results ===
+========= Dashboard results are refreshed =========
+Warning message:
+In system(.) : error in running command
+=
+2020-06-16 07:39:18 Worker started for MRT01 with controller 2020-12-16 2020-12-31 
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+Info: the interval is set to be 20 - 35 seconds
+2020-06-16 08:37:18 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.32   16.89   21.86   21.12   22.80   40.78 
+2020-06-16 08:37:21 Retry failed jobs. Total to retry 5 
+2020-06-16 08:39:55 Retry failed jobs. Total to retry 2 
+Completed. Total 128 files (fetched 82 unavailable 46 ) 
+2020-06-16 08:41:49 BigQuery Upload Completed for MRT01 =========
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+=
+2020-06-16 08:41:49 Worker started for QR01 follow-up 2021-03-02 2021-02-15 2021-01-31 2021-01-16 2021-01-01 
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+Info: the interval is set to be 20 - 35 seconds
+2020-06-16 11:06:15 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  34.90   47.85   54.53   54.97   61.11  100.33 
+2020-06-16 11:06:16 Retry failed jobs. Total to retry 6 
+2020-06-16 11:09:18 Retry failed jobs. Total to retry 1 
+2020-06-16 11:10:07 Retry failed jobs. Total to retry 1 
+Completed. Total 319 files.
+2020-06-16 11:11:37 BigQuery Upload Completed for QR01 =========
+sh: 1: gcloud: not found
+2020-06-16 11:11:37 Serving data results ===
+========= Dashboard results are refreshed =========
+Warning message:
+In system(.) : error in running command
+=
+2020-06-16 11:11:41 Worker started for MRT01 follow-up 2020-12-10 2021-03-05 
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+Info: the interval is set to be 20 - 35 seconds
+2020-06-16 12:31:43 Job completed.========= ========= =========
+Average runing time in seconds
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  15.62   20.40   21.23   21.74   22.22   47.89 
+2020-06-16 12:31:48 Retry failed jobs. Total to retry 22 
+2020-06-16 12:42:12 Retry failed jobs. Total to retry 1 
+2020-06-16 12:42:54 Retry failed jobs. Total to retry 1 
+Completed. Total 172 files (fetched 157 unavailable 15 ) 
+2020-06-16 12:44:51 BigQuery Upload Completed for MRT01 =========
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+2020-06-16 12:44:51 scheduled daily tasks completed =========
+sh: 1: gcloud: not found
+Warning message:
+In system(.) : error in running command
+            task_name time_elapsed
+1  QR with controller    276.06667
+2 MRT with controller     62.51667
+3         QR followup    149.80000
+4        MRT followup     93.16667
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+ = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 

@@ -87,8 +87,6 @@ get_data_qr01 <- function(cached_txts){
 
 serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01")){
   
-  cat(get_time_str(), "Serving data results ===\n")
-  
   dfs <- list.files("./results/", "qr01", full.names = TRUE) %>% 
     sort(decreasing = TRUE) %>% 
     .[1:n_recent] %>% 
@@ -126,9 +124,11 @@ serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01"))
                            "| Refreshed at", substr(max(the_df$ts), 1, 16)))
   }
   
-  ggsave("/home/yanpan/dashboard/www/fltplot.png", 
-         plot = do.call(gridExtra::grid.arrange, p),
-         width = 12, height = 8, dpi = 220)
+  suppressWarnings({
+    ggsave("/home/yanpan/dashboard/www/fltplot.png", 
+           plot = do.call(gridExtra::grid.arrange, p),
+           width = 12, height = 8, dpi = 220)
+  })  
   remove(the_df, p)
 
   
@@ -158,7 +158,7 @@ serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01"))
   
   remove(df_combo)
   saveRDS(df_best, file = "./results/sharing.rds")
-  cat("========= Dashboard results are refreshed =========\n")
+  cat(get_time_str(), "Dashboard results are refreshed =========\n")
 }
 
 
