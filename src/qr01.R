@@ -85,7 +85,7 @@ get_data_qr01 <- function(cached_txts){
 }
 
 
-serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01")){
+serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-15"), min_days = 15){
   
   dfs <- list.files("./results/", "qr01", full.names = TRUE) %>% 
     sort(decreasing = TRUE) %>% 
@@ -105,10 +105,13 @@ serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01"))
   df <- df_all %>% 
     group_by(route, ddate, inout) %>%
     summarise(ts = max(ts)) %>%
-    left_join(df_all)
+    left_join(df_all) 
   
   remove(df_all, dfs)
   
+
+  # plots -------------------------------------------------------------------
+
   p <- list()
   for(the_inout in unique(df$inout)){
     the_df <- df %>% filter(inout == the_inout) %>% mutate(to = paste("to:", to))
@@ -131,33 +134,43 @@ serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-01"))
   })  
   remove(the_df, p)
 
-  
+
+  # pricing table -----------------------------------------------------------
+
   df_combo <- df %>% 
     filter(inout == "Outbound") %>%
-    select(route, ddate, eur1 = eur) %>%
+    select(route, ddate, eur1 = eur, ts) %>%
     inner_join(df %>%
                  filter(inout == "Inbound") %>%
-                 select(route, rdate = ddate, eur2 = eur),
-               by = "route") %>%
-    filter(rdate > ddate + 6) %>%
+                 select(route, rdate = ddate, eur2 = eur, ts),
+               by = c("route", "ts")) %>%
+    filter(rdate > ddate + min_days) %>%
     mutate(eur = eur1 + eur2)
   
   df_best <- df_combo %>%
     group_by(route) %>%
-    summarise(best   = min(eur),
-              median = median(eur)) %>% 
+    summarise(best      = min(eur),
+              quartiles = quantile(eur, c(0.25, 0.5, 0.75)) %>% ceiling() %>% paste(collapse = "<br />")) %>% 
     left_join(df_combo, 
               by = c("route" = "route", "best" = "eur")) %>%
-    select(route, ddate, rdate, best, median) %>%
     mutate(dates = paste0(format(ddate, "%d%b"), "-", format(rdate, "%d%b")),
-           best  = ceiling(best),
-           median= ceiling(median)) %>%
-    group_by(route, best, median) %>% 
-    summarise(best_dates = toString(dates)) %>%
+           best  = paste0(ceiling(best), "<br />(", ceiling(eur1), "+", ceiling(eur2),")"),
+           as_of = format(ymd_hms(ts), "%d%b %H:%M")) %>%
+    group_by(as_of, route, best, quartiles ) %>% 
+    summarise(best_dates = toString(dates) %>% str_replace_all(", ", "<br />")) %>%
     arrange(best)
+
+
+  # pivot with heatmap ------------------------------------------------------
   
-  remove(df_combo)
-  saveRDS(df_best, file = "./results/sharing.rds")
+  df_pivot <- df_combo %>% 
+    group_by(ddate, rdate) %>%
+    summarise(best = ceiling(min(eur)))  %>%
+    pivot_wider(names_from = rdate, values_from = best)
+  
+
+  saveRDS(list(df_best = df_best, df_combo = df_combo, df_pivot = df_pivot), 
+          file = "./results/sharing.rds")
   cat(get_time_str(), "Dashboard results are refreshed =========\n")
 }
 
@@ -172,3 +185,5 @@ save_data_qr01 <- function(file_pattern_qr01){
   
   suppressMessages(serve_latest_results())
 }
+
+

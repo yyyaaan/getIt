@@ -3,6 +3,14 @@ require(magrittr)
 
 # common base tool --------------------------------------------------------
 
+dest_dict <- list(HEL = "Helsinki", ARN = "Stockholm", AMS = "Amsterdam", BRU = "Brussels",  WAW = "Warsaw",   GOT = "Gotenburg", TLL = "Tallinn",
+                  SYD = "Sydney",   CBR = "Canberra",  ADL = "Adelaide",  MEL = "Melbourne", BNE = "Brisbane", PER = "Perth",
+                  NAN = "Nadi",     NOU = "Noumea",
+                  PVG = "Shanghai", HND = "Haneda",    SIN = "Singapore", TYO = "Tokyo",     HKG = "Hong Kong")
+
+dest_revdict <- as.list(names(dest_dict))
+names(dest_revdict) <- tolower(dest_dict)
+
 shared_encode_url <- function(prefix, suffix, params, sep_par = "&", sep_eq = "="){
   params %>% 
     paste (names(.), ., sep = sep_eq) %>% 
@@ -54,10 +62,6 @@ flight_url_qatar_2legs <-  function(dates, dests, cabin = "B"){
   }
   
   if(dests[2] == dests[3] && dests[1] == dests[4]){
-    dest_dict <- list(HEL = "Helsinki", ARN = "Stockholm", AMS = "Amsterdam", BRU = "Brussels",  WAW = "Warsaw",   GOT = "Gotenburg",
-                      SYD = "Sydney",   CBR = "Canberra",  ADL = "Adelaide",  MEL = "Melbourne", BNE = "Brisbane", PER = "Perth",
-                      NAN = "Nadi",     NOU = "Noumea",
-                      PVG = "Shanghai", HND = "Haneda",    SIN = "Singapore", TYO = "Tokyo",     HKG = "Hong Kong")
     
     params <- list(widget = "QR",
                    searchType = "F",
@@ -87,6 +91,40 @@ flight_url_qatar_2legs <-  function(dates, dests, cabin = "B"){
   }
   
   shared_encode_url(prefix = "https://booking.qatarairways.com/nsp/views/showBooking.action?",
+                    suffix = "",
+                    params = params,
+                    sep_par = "&",
+                    sep_eq  = "=")
+}
+
+flight_url_singapore_return <-  function(dates, dests, cabin = "B"){
+  
+  # only supports return trip, dests[3:4] are not used since return trip is supposed
+  
+  params <- list(cabinClassCode = ifelse(cabin == "B", "J", "Y"),
+                 tripType       = "R",
+                 numAdults      = 1,
+                 numChildren    = 0,
+                 numInfant      = 0,
+                 affiliate_id   = 11075,
+                 locale         = "en_UK",
+                 #countryCode                      = "NO",
+                 `ondCityCode%5B0%5D.origin`      = dests[1],
+                 `ondCityCode%5B0%5D.destination` = dests[2],
+                 `ondCityCode%5B0%5D.month`       = format(dates[1], "%m/%Y"), 
+                 `ondCityCode%5B0%5D.day`         = format(dates[1], "%d"),
+                 #flightNumber                     = "2651_351_241",
+                 #bookingCode                      = ifelse(cabin == "B", "D", "W"),
+                 carrierCode                      = "SQ",
+                 `ondCityCode%5B1%5D.origin`      = dests[2],
+                 `ondCityCode%5B1%5D.destination` = dests[1],
+                 `ondCityCode%5B1%5D.month`       = format(dates[2], "%m/%Y"), 
+                 `ondCityCode%5B1%5D.day`         = format(dates[2], "%d"),
+                 #flightNumber1                    = "212_352_2638",
+                 #bookingCode1                     = ifelse(cabin == "B", "D", "K"),
+                 carrierCode1                     = "SQ")
+
+  shared_encode_url(prefix = "https://www.singaporeair.com/flightsearch/externalFlightSearch.form?searchType=commercial&",
                     suffix = "",
                     params = params,
                     sep_par = "&",
@@ -251,6 +289,17 @@ hotel_url_ihg <- function(dates, dest, code, extra = NA){
 hotel_predefined <- function(){
   
 }
+
+
+# higher level function for convenience -----------------------------------
+
+flight_url_qatar_by_data <- function(route, ddate, rdate){
+  
+  x <- route %>% tolower() %>% str_split(" |\\|", simplify = TRUE) %>% .[1, ]
+  flight_url_qatar_2legs(dates = c(ddate, rdate),
+                         dests = c(dest_revdict[[x[1]]], dest_revdict[[x[2]]], dest_revdict[[x[3]]], dest_revdict[[x[4]]]))
+}
+
 
 # calling example ---------------------------------------------------------
 

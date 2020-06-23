@@ -1,6 +1,7 @@
 library(tidyverse)
 library(lubridate)
 library(rvest)
+library(DT)
 library(bigrquery); library(googleAuthR) #for bigQuery
 
 ## the global parameter can be overriden as needed
@@ -58,7 +59,7 @@ show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
   logs <- readLines(log_file)
   
   if(clean_log){
-    rid <- grep("nodes submitted|processed|cannot|nothing|NULL", logs, ignore.case = TRUE)
+    rid <- grep("nodes submitted|processed|cannot|nothing|NULL|retry", logs, ignore.case = TRUE)
     writeLines(logs[-rid], log_file)
   }
   

@@ -116,6 +116,57 @@ get_data_mrt01 <- function(cached_txts){
   return(df_final)
 }
 
+serve_mrt_results <- function(n_recent = 10, min_date = as.Date("2020-12-01")){
+  
+  dfs <- list.files("./results/", "mrt01", full.names = TRUE) %>% 
+    sort(decreasing = TRUE) %>% 
+    .[1:n_recent] %>% 
+    as.list() %>% 
+    lapply(function(x) x %>% 
+             readRDS() %>%
+             filter(check_in >= min_date)) 
+  
+  df_all <- union_all(dfs[[1]], dfs[[2]])
+  for (i in 3:length(dfs)) {
+    df_all <- union_all(df_all, dfs[[i]])
+  }
+  
+  ### determing latest records
+  df <- df_all %>% 
+    group_by(hotel, room_type, rate_type, check_in, check_out) %>%
+    summarise(ts = max(ts)) %>%
+    left_join(df_all) 
+  
+  remove(df_all, dfs)
+  
+  the_df <- df %>% 
+    group_by(hotel, check_in, nights) %>%
+    summarize(`Daily rate (median 50% €)` = ceiling(median(eur_avg)),
+              `Daily rate (lower 25% €)` = ceiling(quantile(eur_avg, 0.25)),
+              `Daily rate (upper 75% €)` = ceiling(quantile(eur_avg, 0.75))) %>%
+    pivot_longer(cols = c("Daily rate (median 50% €)", "Daily rate (lower 25% €)", "Daily rate (upper 75% €)")) %>%
+    mutate(nights = paste("Stay for", nights, "nights"), ` ` = name) 
+
+  # plots median by hotel, facet by nights ----------------------------------
+    
+  get_p <- function(the_df) the_df %>%
+    ggplot(aes(check_in, value, color = ` `)) +
+    geom_line() + 
+    facet_grid(nights ~ hotel) +
+    theme_minimal() +
+    scale_color_brewer(palette = "Pastel1") +
+    theme(legend.position = "top") + xlab("") + ylab("") 
+  
+  p1 <- the_df %>% filter(!str_detect(tolower(hotel), "regis")) %>% get_p()
+  p2 <- the_df %>% filter( str_detect(tolower(hotel), "regis")) %>% get_p() + 
+    labs(caption = paste("Latest available", max(df$check_in),
+                         "| Refreshed at", substr(max(df$ts), 1, 16)))
+  
+  ggsave("/home/yanpan/dashboard/www/mrtplot.png", 
+         plot = gridExtra::grid.arrange(p1, p2),
+         width = 12, height = 8, dpi = 220)
+
+}
 
 save_data_mrt01 <- function(file_pattern_mrt01){
   df_mrt01 <- list.files("./cache/", file_pattern_mrt01, full.names = T) %>% get_data_mrt01()
