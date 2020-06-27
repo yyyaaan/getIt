@@ -8,6 +8,7 @@ suppressMessages({
   setwd("/home/yanpan/getIt")
   source("./src/qr01.R")
   source("./src/mrt01.R")
+  source("./src/serving.R")
 })
 
 ### sequence are supposed to be completed once in a 4-day run
@@ -61,12 +62,12 @@ get_exchange_rate()
 
 # follow-up series --------------------------------------------------------
 
-logger("Worker started for QR01 follow-up", qr_fu_dates)
+logger("Worker started QR01 fu", qr_fu_dates)
 start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
+suppressMessages(serve_qr01())
 
-
-logger("Worker started for MRT01 follow-up", mrt_fu_dates)
+logger("Worker started MRT01 fu", mrt_fu_dates)
 start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
  
@@ -74,21 +75,20 @@ save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 # defined series (not daily) ----------------------------------------------
  
 
-logger("Worker started for QR01 with controller", qr_oooo_dates)
+logger("Worker started for QR01 ctrl", qr_oooo_dates)
 start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
-
 
 ## lower the frequency to save resource for others
 def_interval <<- 35:75
 
 
-logger("Worker started for MRT01 with controller", mrt_oooo_dates)
+logger("Worker started for MRT01 ctrl", mrt_oooo_dates)
 start_mrt01(mrt_oooo_dates, mrt_loop_nights, mrt_loop_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 
-serve_mrt_results()
-
+suppressMessages(serve_qr01())
+suppressMessages(serve_mrt01())
 
 # all completed -----------------------------------------------------------
  

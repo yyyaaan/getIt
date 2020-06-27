@@ -8,3 +8,4 @@ node_modules
 results
 ztest.js
 zzz*
+scheduled.log

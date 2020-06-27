@@ -3,8 +3,9 @@ require(magrittr)
 
 # common base tool --------------------------------------------------------
 
-dest_dict <- list(HEL = "Helsinki", ARN = "Stockholm", AMS = "Amsterdam", BRU = "Brussels",  WAW = "Warsaw",   GOT = "Gotenburg", TLL = "Tallinn",
-                  SYD = "Sydney",   CBR = "Canberra",  ADL = "Adelaide",  MEL = "Melbourne", BNE = "Brisbane", PER = "Perth",
+dest_dict <- list(HEL = "Helsinki", ARN = "Stockholm", TLL = "Tallinn",   CPH = "Copenhagen", OSL = "Oslo",
+                  BRU = "Brussels", WAW = "Warsaw",    GOT = "Gotenburg", AMS = "Amsterdam", 
+                  SYD = "Sydney",   CBR = "Canberra",  ADL = "Adelaide",  MEL = "Melbourne",  BNE = "Brisbane", PER = "Perth",
                   NAN = "Nadi",     NOU = "Noumea",
                   PVG = "Shanghai", HND = "Haneda",    SIN = "Singapore", TYO = "Tokyo",     HKG = "Hong Kong")
 

@@ -85,96 +85,6 @@ get_data_qr01 <- function(cached_txts){
 }
 
 
-serve_latest_results <- function(n_recent = 8, min_date = as.Date("2021-05-15"), min_days = 15){
-  
-  dfs <- list.files("./results/", "qr01", full.names = TRUE) %>% 
-    sort(decreasing = TRUE) %>% 
-    .[1:n_recent] %>% 
-    as.list() %>% 
-    lapply(function(x) x %>% 
-             readRDS() %>%
-             filter(ddate >= min_date) %>%
-             select(route, ddate, inout, eur, from, to, ts)) 
-
-  df_all <- union_all(dfs[[1]], dfs[[2]])
-  for (i in 3:length(dfs)) {
-    df_all <- union_all(df_all, dfs[[i]])
-  }
-  
-  ### determing latest records
-  df <- df_all %>% 
-    group_by(route, ddate, inout) %>%
-    summarise(ts = max(ts)) %>%
-    left_join(df_all) 
-  
-  remove(df_all, dfs)
-  
-
-  # plots -------------------------------------------------------------------
-
-  p <- list()
-  for(the_inout in unique(df$inout)){
-    the_df <- df %>% filter(inout == the_inout) %>% mutate(to = paste("to:", to))
-    p[[the_inout]] <- the_df %>%
-      ggplot(aes(ddate, eur, color = from)) + 
-      geom_point (alpha = 0.3, size = 0.3) + 
-      geom_smooth(se = FALSE, size = 0.6) + 
-      facet_grid (~to, scales = "free_x") +
-      theme_minimal() +
-      theme(legend.position = "top") +
-      xlab("") + ylim(900, 3300) + 
-      labs(caption = paste("Latest available", max(the_df$ddate),
-                           "| Refreshed at", substr(max(the_df$ts), 1, 16)))
-  }
-  
-  suppressWarnings({
-    ggsave("/home/yanpan/dashboard/www/fltplot.png", 
-           plot = do.call(gridExtra::grid.arrange, p),
-           width = 12, height = 8, dpi = 220)
-  })  
-  remove(the_df, p)
-
-
-  # pricing table -----------------------------------------------------------
-
-  df_combo <- df %>% 
-    filter(inout == "Outbound") %>%
-    select(route, ddate, eur1 = eur, ts) %>%
-    inner_join(df %>%
-                 filter(inout == "Inbound") %>%
-                 select(route, rdate = ddate, eur2 = eur, ts),
-               by = c("route", "ts")) %>%
-    filter(rdate > ddate + min_days) %>%
-    mutate(eur = eur1 + eur2)
-  
-  df_best <- df_combo %>%
-    group_by(route) %>%
-    summarise(best      = min(eur),
-              quartiles = quantile(eur, c(0.25, 0.5, 0.75)) %>% ceiling() %>% paste(collapse = "<br />")) %>% 
-    left_join(df_combo, 
-              by = c("route" = "route", "best" = "eur")) %>%
-    mutate(dates = paste0(format(ddate, "%d%b"), "-", format(rdate, "%d%b")),
-           best  = paste0(ceiling(best), "<br />(", ceiling(eur1), "+", ceiling(eur2),")"),
-           as_of = format(ymd_hms(ts), "%d%b %H:%M")) %>%
-    group_by(as_of, route, best, quartiles ) %>% 
-    summarise(best_dates = toString(dates) %>% str_replace_all(", ", "<br />")) %>%
-    arrange(best)
-
-
-  # pivot with heatmap ------------------------------------------------------
-  
-  df_pivot <- df_combo %>% 
-    group_by(ddate, rdate) %>%
-    summarise(best = ceiling(min(eur)))  %>%
-    pivot_wider(names_from = rdate, values_from = best)
-  
-
-  saveRDS(list(df_best = df_best, df_combo = df_combo, df_pivot = df_pivot), 
-          file = "./results/sharing.rds")
-  cat(get_time_str(), "Dashboard results are refreshed =========\n")
-}
-
-
 save_data_qr01 <- function(file_pattern_qr01){
   # file_pattern_qr01 <- paste0("qr01_", gsub("-", "", Sys.Date()))
   
@@ -182,8 +92,6 @@ save_data_qr01 <- function(file_pattern_qr01){
   saveRDS(df_qr01, paste0("./results/", file_pattern_qr01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_qr01)
   util_bq_upload(df_qr01, table_name = "QR01")
-  
-  suppressMessages(serve_latest_results())
 }
 
 
