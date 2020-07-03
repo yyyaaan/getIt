@@ -24,7 +24,8 @@ start_ay01 <- function(loop_deps   = "CPH TLL ARN HEL OSL",
   for(i in sample(1:nrow(param_set))){
     urls <- c(urls, flight_url_finnair_any(
       dates = c(as.Date(param_set$ddate[i]), as.Date(param_set$ddate[i]) + the_days),
-      dests = c(param_set$desta[i], param_set$destb[i], param_set$destc[i], param_set$destd[i])))
+      dests = c(param_set$desta[i], param_set$destb[i], param_set$destc[i], param_set$destd[i]),
+      cabin = "E"))
   }
   
   ## call batch
@@ -47,7 +48,8 @@ get_data_ay01 <- function(cached_txts){
     
     the_html  <- read_html(the_file)
     the_flag <- the_html %>% html_node("h2") %>% html_text()
-    if(!str_detect(the_flag, "bound")){
+    
+    if(is.na(the_flag) || !str_detect(the_flag, "bound")){
       j <- j + 1 # the ok ones should be "inbound" or "outbound"
       next()
     } 
@@ -94,12 +96,12 @@ get_data_ay01 <- function(cached_txts){
            ddate  = ddate %>% ymd_hm() %>% as_date(),
            eur    = as.numeric(price)/rate,
            tss    = ts %>% ymd_hms() %>% date()) %>%
-    select(route, inout, flight, from, to, ddate, eur, price, ccy, tss, ts)
+    select(route, inout, flight, from, to, ddate, fare, eur, price, ccy, tss, ts)
   
   return(df)
 }
 
 
 
-# list.files("./cache/", paste0("ay01_"), full.names = T) %>% get_data_ay01()
-start_ay01(loop_deps = "TLL ARN HEL OSL", loop_dests = "SYD")
+# list.files("./cache/", paste0("ay01_"), full.names = T) %>% get_data_ay01() -> df
+# start_ay01(loop_deps = "TLL ARN HEL OSL", loop_dests = "SYD")

@@ -9,3 +9,5 @@ results
 ztest.js
 zzz*
 scheduled.log
+schema.json
+to_load.txt
