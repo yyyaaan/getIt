@@ -80,15 +80,29 @@ show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
 
 # bigquery & logger -------------------------------------------------------
 
-logger <- function(..., log_name = "getIt"){
+line_to_users <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
+  
+  cli <- sprintf("
+curl -v -X POST https://api.line.me/v2/bot/message/push \\
+-H 'Content-Type: application/json' \\
+-H \"Authorization: Bearer %s \" \\
+-d '{\"to\": \"%s\", \"messages\": [{\"type\": \"text\", \"text\": \"%s\"}]}'
+", readLines('/home/yanpan/.token_line')[1], to, text)
+  
+  system(cli)
+}
 
+logger <- function(..., log_name = "getIt"){
+  
   text = paste(..., collapse = " ")
   if(grepl("start", tolower(text))) cat("=\n")
   
   cat(get_time_str(), text, ifelse(grepl("completed", tolower(text)),"=========\n", "\n"))
   # SEVERITY in DEFAULT, DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
+  line_to_user(text)
   paste("/snap/bin/gcloud logging write", log_name, "'", text, "' --severity=INFO") %>% system()
 }
+
 
 util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore"){
   bq_deauth()
@@ -220,10 +234,10 @@ start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE){
           "Remaining", length(urls) - job_submitted, "\n")
       
       ### wait more if too many in progress
-      if(job_submitted - job_completed > 6) {
-        cat(get_time_str(), "Pausing - wait for job to be completed")
-        Sys.sleep(sample(2*def_interval, 1))
-      }
+      # if(job_submitted - job_completed > 6) {
+      #   cat(get_time_str(), "Pausing - wait for job to be completed")
+      #   Sys.sleep(sample(2*def_interval, 1))
+      # }
       system("rm ./cache/tmp_runjs_*")      
     }
   }

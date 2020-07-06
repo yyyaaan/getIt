@@ -94,14 +94,43 @@ get_data_ay01 <- function(cached_txts){
                            "-", (time2/1000) %>% as_datetime() %>% format("%H:%M"), 
                           to, paste0(timedur %/% 60, "h", timedur %% 60, "min")),
            ddate  = ddate %>% ymd_hm() %>% as_date(),
-           eur    = as.numeric(price)/rate,
+           price  = as.numeric(price),
+           eur    = price/rate,
            tss    = ts %>% ymd_hms() %>% date()) %>%
     select(route, inout, flight, from, to, ddate, fare, eur, price, ccy, tss, ts)
   
   return(df)
 }
 
+serve_ay01 <- function(df){
+  df_day <- df %>% 
+    group_by(route, inout, from, to, ddate) %>%
+    summarise(eur = min(eur)) %>% 
+    left_join(df) %>%             
+    group_by(route, inout, from, to, ddate) %>%
+    summarise(eur = min(eur), fare = toString(unique(fare)))
+  
+  df_route <- df_day %>% 
+    filter(inout == "Outbound") %>%
+    left_join(df %>% filter(inout == "Inbound") %>% 
+                select(route, rdate=ddate, eur2=eur, fare2=fare)) %>%
+    filter(rdate >= ddate + 7) %>%
+    ungroup() %>%
+    distinct() %>%
+    select(route, ddate, rdate, fare1 = fare, eur1 = eur, fare2, eur2, eur) %>%
+    mutate(eur = eur1 + eur2) %>%
+    arrange(eur, ddate, rdate)
+  
+}
+
+save_data_ay01 <- function(file_pattern_ay01){
+  # file_pattern_ay01 <- "ay01_"
+  df_ay01 <- list.files("./cache/", file_pattern_ay01, full.names = T) %>% get_data_ay01()
+  saveRDS(df_ay01, paste0("./results/", file_pattern_ay01, format(Sys.time(), "_%H%M"), ".rds"))
+  write_csv(df_ay01, paste0("./results/", file_pattern_ay01, format(Sys.time(), "_%H%M"), ".csv"))
+  archive_files(file_pattern_ay01)
+  
+  # util_bq_upload(df_mrt01, table_name = "MRT01")
+}
 
 
-# list.files("./cache/", paste0("ay01_"), full.names = T) %>% get_data_ay01() -> df
-# start_ay01(loop_deps = "TLL ARN HEL OSL", loop_dests = "SYD")
