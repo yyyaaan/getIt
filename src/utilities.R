@@ -80,16 +80,18 @@ show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
 
 # bigquery & logger -------------------------------------------------------
 
-line_to_users <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
+line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
   
-  cli <- sprintf("
-curl -v -X POST https://api.line.me/v2/bot/message/push \\
--H 'Content-Type: application/json' \\
--H \"Authorization: Bearer %s \" \\
--d '{\"to\": \"%s\", \"messages\": [{\"type\": \"text\", \"text\": \"%s\"}]}'
-", readLines('/home/yanpan/.token_line')[1], to, text)
-  
-  system(cli)
+  system2("curl",
+          args = c("-s", "-v", "-X",
+                   "POST https://api.line.me/v2/bot/message/push",
+                   "-H", "'Content-Type: application/json'",
+                   "-H", sprintf("'Authorization: Bearer %s'",
+                                 readLines('/home/yanpan/.token_line')[1]),
+                   "-d", sprintf("'{\"to\": \"%s\", \"messages\": [{\"type\": \"text\", \"text\": \"%s\"}]}'",
+                                 to, text)),
+          stdout = FALSE, 
+          stderr = FALSE)
 }
 
 logger <- function(..., log_name = "getIt"){

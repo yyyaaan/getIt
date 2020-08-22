@@ -41,7 +41,9 @@ qr_date_max <- Sys.Date() + 353 - qr_the_days - controller # fixed, interval is 
 qr_special  <- (Sys.Date() + 360 - qr_the_days) %>% format("%Y-%m-%d")
 qr_fu_deps  <- "HEL OSL TLL"
 qr_fu_dests <- "SYD CBR ADL MEL"
-qr_fu_dates <- seq(qr_date_max - 75*controller, length = 5, by = "-15 days") %>% format("%Y-%m-%d") %>% paste(collapse = " ")
+qr_fu_dates <- seq(qr_date_max - 75*controller, length = 5, by = "-15 days") 
+### updated to ensure earlies of 2020-11-01
+qr_fu_dates <- qr_fu_dates[qr_fu_dates >= as.Date("2020-11-01")] %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
 mrt_date_max  <- Sys.Date() + 355 - 7
 mrt_fu_nights <- c(4, 7)
