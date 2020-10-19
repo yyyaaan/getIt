@@ -11,10 +11,10 @@ suppressMessages({
 
 def_interval <<- 39:199
 
-loop_deps   <- "HEL TLL OSL"
-loop_dests  <- "PVG BKK HND"
-range_ddate <- "2021-01-28 2021-02-12"
-the_days    <- 8
+loop_deps   <- "CPH OSL TLL ARN"
+loop_dests  <- "LAX"
+range_ddate <- "2021-06-25 2021-06-31"
+the_days    <- c(14,21)
 
 start_ay01(loop_deps, loop_dests, range_ddate, the_days)
 

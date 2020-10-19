@@ -105,9 +105,9 @@ serve_qr01  <- function(n_recent = 10, min_date = as.Date("2021-05-15"), min_day
     summarise(best_dates = toString(dates) %>% str_replace_all(", ", "<br />")) %>%
     arrange(best)
   
-  # montly list: df and pivot by date ---------------------------------------
+  # monthly list: df and pivot by date ---------------------------------------
   
-  df_combo_by_month <- df_pivot_by_month <- list()
+  df_combo_by_month <- df_pivot_by_month <- df_pivot_by_month_hel <- list()
   
   for (the_month in unique(df_combo$dmonth)) {
     df_combo_by_month[[the_month]] <- df_combo %>% 
@@ -116,11 +116,21 @@ serve_qr01  <- function(n_recent = 10, min_date = as.Date("2021-05-15"), min_day
     df_pivot_by_month[[the_month]] <- df_combo_by_month[[the_month]] %>%
       group_by(ddate, rdate) %>%
       summarise(best = ceiling(min(eur)), .groups = 'drop')  %>%
+      arrange(rdate) %>%
       pivot_wider(names_from = rdate, values_from = best)
+    
+    df_pivot_by_month_hel[[the_month]] <- df_combo_by_month[[the_month]] %>%
+      filter(str_sub(route, 1, 3) == "Hel") %>%
+      group_by(ddate, rdate) %>%
+      summarise(best = ceiling(min(eur)), .groups = 'drop')  %>%
+      arrange(rdate) %>%
+      pivot_wider(names_from = rdate, values_from = best)
+    
   }
   
   
-  saveRDS(list(df_best = df_best, df_combo = df_combo_by_month, df_pivot = df_pivot_by_month), 
+  saveRDS(list(df_best = df_best, df_combo = df_combo_by_month, df_pivot = df_pivot_by_month,
+               df_pivot2 = df_pivot_by_month_hel), 
           file = "./results/sharing.rds")
 }
 
