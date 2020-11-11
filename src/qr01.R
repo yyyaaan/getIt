@@ -36,9 +36,11 @@ start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL",
 
 get_data_qr01 <- function(cached_txts){
   ## cached_txts <- list.files("./cache/", paste0("qr01_", gsub("-", "", Sys.Date())), full.names = T)
+  ## cached_txts <- list.files("./cache/", "qr_", full.names = T)
   
   ## shorthand functions
-  html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n| ", "", .) %>% gsub("\u00A0", " ", .)
+  html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n|  ", "", .) %>% gsub("\u00A0", " ", .)
+  html_str_rm  <- . %>% gsub("Select (Out|In)bound flightfor", "", .) %>% gsub("Select Flight (1|2)for", "", .) %>% gsub("[ ]+to[ ]+", " ", .) %>% str_trim()
   auto_date    <- . %>% paste(year(today())) %>% dmy() %>% ifelse(. < today(), . + years(1), .) %>% as_date()
   
   out_df <- data.frame(); i <- 0
@@ -51,18 +53,19 @@ get_data_qr01 <- function(cached_txts){
     ## get data
     i <- i+1
     the_time  <- the_html %>% html_node("timestamp") %>% html_text()
-    the_combo <- the_html %>% html_nodes(".calenderTitle") %>% html_trimmed() %>% paste(collapse = "|")
+    the_combo <- the_html %>% html_nodes(".destHeading") %>% html_trimmed() %>% html_str_rm() %>% paste(collapse = "|")
     two_routes<- the_html %>% html_nodes(".md-details")
     
     for(the_route in two_routes){
       out_df <- rbind(out_df, data.frame(
-        flight= the_route %>% html_nodes(".calenderTitle") %>% html_trimmed(),
+        flight= the_route %>% html_nodes(".destHeading") %>% html_trimmed() %>% html_str_rm(),
         ddate = the_route %>% html_nodes(".cdate") %>% html_trimmed(),
         price = the_route %>% html_nodes(".taxInMonthCalFnSizeAmount") %>% html_trimmed(),
         ccy   = the_route %>% html_nodes(".taxInMonthCalFnSizeCurCode") %>% html_trimmed(),
         inout = the_route %>% html_node(".destHeading") %>% html_trimmed(),
         ts    = the_time,
-        route = the_combo))
+        route = the_combo) %>%
+          filter(str_length(ddate) > 2, str_length(price) > 2))
     }
     
     if(i %% 50 == 0) cat("Processed", i, "files\r")
@@ -74,7 +77,7 @@ get_data_qr01 <- function(cached_txts){
   df <- out_df %>% 
     filter(price != "") %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%
-    mutate(inout  = ifelse(inout %in% c("Outboundflight", "Flight1"), "Outbound", "Inbound"),
+    mutate(inout  = ifelse(str_detect(flight, "Outbound|Flight 1"), "Outbound", "Inbound"),
            from   = str_split(flight, " ", simplify = T)[,1],
            to     = str_split(flight, " ", simplify = T)[,2],
            ddate  = ddate %>% auto_date(),

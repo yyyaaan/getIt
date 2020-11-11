@@ -1,4 +1,4 @@
-const params  = ['https://booking.qatarairways.com/nsp/views/showBooking.action?widget=QR&searchType=F&addTaxToFare=Y&minPurTime=0&upsellCallId=&allowRedemption=Y&flexibleDate=Off&bookingClass=E&tripType=R&selLang=en&fromStation=HEL&from=Helsinki&toStation=CBR&to=Helsinki&departingHidden=29-Mar-2021&departing=2021-03-29&returningHidden=17-Apr-2021&returning=2021-04-17&adults=1&children=0&infants=0&teenager=0&ofw=0&promoCode=&stopOver=NA', 'qr_tmp'];
+const params  = ['https://booking.qatarairways.com/nsp/views/showBooking.action?widget=MLC&searchType=S&bookingClass=B&minPurTime=null&tripType=M&allowRedemption=Y&selLang=EN&adults=1&children=0&infants=0&teenager=0&ofw=0&promoCode=&fromStation=TLL&toStation=MEL&departingHiddenMC=07-Jan-2021&departing=2021-01-07&fromStation=ADL&toStation=HEL&departingHiddenMC=25-Jan-2021&departing=2021-01-25', 'qr_tmp'];
 const req_url   = params[0];
 const req_name  = params[1];
 const puppeteer = require('puppeteer');
@@ -37,8 +37,9 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
     
     await page.click('#flightDetailForm_outbound\\:calendarInitiator_OutBound')
     //await page.waitFor(29000);
-    await page.waitForSelector('.calenderTitle');
-    await page.waitForSelector('span.taxInMonthCal');
+    //await page.waitForSelector('.calenderTitle');
+    //await page.waitForSelector('span.taxInMonthCal');
+    await page.waitForSelector('.outbound-fifteendays-cal');
 
     // endpoints and extracting
     // try outer/innerHTML/Text, textContent
@@ -57,3 +58,5 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   
   await browser.close()
 })()
+
+// 'https://booking.qatarairways.com/nsp/views/showBooking.action?widget=QR&searchType=F&addTaxToFare=Y&minPurTime=0&upsellCallId=&allowRedemption=Y&flexibleDate=Off&bookingClass=B&tripType=R&selLang=en&fromStation=HEL&from=Helsinki&toStation=CBR&to=Helsinki&departingHidden=29-Mar-2021&departing=2021-03-29&returningHidden=17-Apr-2021&returning=2021-04-17&adults=1&children=0&infants=0&teenager=0&ofw=0&promoCode=&stopOver=NA'
