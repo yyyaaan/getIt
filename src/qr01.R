@@ -26,9 +26,20 @@ start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL",
   ## call batch
   start_batch(urls, jssrc = './src/qr01.js', file_init = 'qr01')
   
-  ## retry
+  ## retry 1
   file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("qr01_", .)
   start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
+  
+  ## remove possible unavailability. needed due to coronavirus -- speed concern
+  special_skip <- list.files("./cache/", file_pattern, full.names = T) %>% lapply(function(x){
+    pp <- readLines(x, warn = FALSE)
+    ff <- str_detect(pp[length(pp)], "outbound_tripDetails1")
+    if(ff) system(paste("mv", x, "./cache/removed"))
+    return(ifelse(ff, 1, 0))
+  })
+  logger("Skipped", special_skip %>% unlist() %>% sum(), "that are very likely to be sold out")
+  
+  ## retry 2 and 3
   start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
   start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
 }
@@ -36,7 +47,7 @@ start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL",
 
 get_data_qr01 <- function(cached_txts){
   ## cached_txts <- list.files("./cache/", paste0("qr01_", gsub("-", "", Sys.Date())), full.names = T)
-  ## cached_txts <- list.files("./cache/", "qr_", full.names = T)
+  ## cached_txts <- list.files("./cache/", "qr01_", full.names = T)
   
   ## shorthand functions
   html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n|  ", "", .) %>% gsub("\u00A0", " ", .)
@@ -77,7 +88,7 @@ get_data_qr01 <- function(cached_txts){
   df <- out_df %>% 
     filter(price != "") %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%
-    mutate(inout  = ifelse(str_detect(flight, "Outbound|Flight 1"), "Outbound", "Inbound"),
+    mutate(inout  = ifelse(str_detect(inout, "Outbound|Flight 1"), "Outbound", "Inbound"),
            from   = str_split(flight, " ", simplify = T)[,1],
            to     = str_split(flight, " ", simplify = T)[,2],
            ddate  = ddate %>% auto_date(),
@@ -90,6 +101,7 @@ get_data_qr01 <- function(cached_txts){
 
 save_data_qr01 <- function(file_pattern_qr01){
   # file_pattern_qr01 <- paste0("qr01_", gsub("-", "", Sys.Date()))
+  # file_pattern_qr01 <- "qr01_"
   
   df_qr01 <- list.files("./cache/", file_pattern_qr01, full.names = T) %>% get_data_qr01()
   saveRDS(df_qr01, paste0("./results/", file_pattern_qr01, format(Sys.time(), "_%H%M"), ".rds"))

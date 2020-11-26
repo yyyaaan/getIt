@@ -258,6 +258,26 @@ hotel_url_accor <- function(dates, country, city, extra = NA){
   
 }
 
+hotel_url_hilton <- function(dates, code, extra = NA){
+
+  shared_validate_url_inputs(dates, character(4), 2)
+  
+  params = list(ctyhocn = code,
+                arrivalDate = dates[1] %>% as.Date() %>% format.Date("%Y-%m-%d"),
+                departureDate = dates[2] %>% as.Date() %>% format.Date("%Y-%m-%d"),
+                room1NumAdults = 2)
+  
+  prefix = "https://www.hilton.com/en/book/reservation/rooms/?"
+  
+  shared_encode_url(prefix  = prefix,
+                    suffix  = "",
+                    params  = params,
+                    sep_par = "&",
+                    sep_eq  = "=")
+  
+  
+}
+
 hotel_url_ihg <- function(dates, dest, code, extra = NA){
   
   shared_validate_url_inputs(dates, character(4), 2)
@@ -285,10 +305,6 @@ hotel_url_ihg <- function(dates, dest, code, extra = NA){
                     params  = params,
                     sep_par = "&",
                     sep_eq  = "=")
-}
-
-hotel_predefined <- function(){
-  
 }
 
 
@@ -342,5 +358,7 @@ run_example <- function(){
                   country = "France",
                   city = "Nice") %>% cat()
   
+  hotel_url_hilton(dates,
+                   code = "PPTMLHI") %>% cat()  
 }
 

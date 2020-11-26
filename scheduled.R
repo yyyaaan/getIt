@@ -80,7 +80,7 @@ start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 
 ## lower the frequency to save resource for others
-def_interval <<- 35:75
+## def_interval <<- 35:75
 
 
 logger("Worker started for MRT01 ctrl", mrt_oooo_dates)

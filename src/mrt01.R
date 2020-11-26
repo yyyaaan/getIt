@@ -118,6 +118,7 @@ get_data_mrt01 <- function(cached_txts){
 
 
 save_data_mrt01 <- function(file_pattern_mrt01){
+  # file_pattern_mrt01 <- paste0("mrt01_", gsub("-", "", Sys.Date()))
   df_mrt01 <- list.files("./cache/", file_pattern_mrt01, full.names = T) %>% get_data_mrt01()
   saveRDS(df_mrt01, paste0("./results/", file_pattern_mrt01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_mrt01)
