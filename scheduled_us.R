@@ -11,13 +11,23 @@ suppressMessages({
 
 def_interval <<- 39:199
 
-loop_deps   <- "CPH OSL TLL ARN"
-loop_dests  <- "LAX"
-range_ddate <- "2021-06-25 2021-06-31"
-the_days    <- c(14,21)
+loop_deps   <- "HEL TLL CPH"
+loop_dests  <- "PPT NAN"
+range_ddate <- "2021-04-03 2021-04-12"
+#the_days    <- 14
 
-start_ay01(loop_deps, loop_dests, range_ddate, the_days)
+start_ay01(loop_deps, loop_dests, range_ddate, the_days = 12)
+start_ay01(loop_deps, loop_dests, range_ddate, the_days = 15)
 
 
-
+do_not_run <- function(){
+  source("./src/ay01.R")
+  # per-leg detailed table save to ./results
+  save_data_ay01("ay01_") 
+  # get route, need to load manually
+  serve_ay01(df) -> df_route
+  df_route %>% group_by(route) %>% summarize(min_eur = min(eur)) %>%
+    arrange(min_eur)-> df_min
+  
+}
 

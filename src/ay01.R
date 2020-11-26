@@ -121,6 +121,8 @@ serve_ay01 <- function(df){
     mutate(eur = eur1 + eur2) %>%
     arrange(eur, ddate, rdate)
   
+  return(df_route)
+  
 }
 
 save_data_ay01 <- function(file_pattern_ay01){
