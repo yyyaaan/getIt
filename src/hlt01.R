@@ -63,6 +63,8 @@ get_data_hlt01 <- function(cached_txts){
     the_html <- read_html(the_file)
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
+    if (the_html %>% html_text() %>% str_sub(1, 5) == "error") the_flag = "Sold Out"
+    
     if(length(the_flag) && the_flag == "Sold Out"){
       j <- j + 1
       next()
@@ -99,6 +101,7 @@ get_data_hlt01 <- function(cached_txts){
 
 save_data_hlt01 <- function(file_pattern_hlt01){
   # file_pattern_hlt01 <- paste0("hlt01_", gsub("-", "", Sys.Date()))
+  # file_pattern_hlt01 <- "hlt01_"
   df_hlt01 <- list.files("./cache/", file_pattern_hlt01, full.names = T) %>% get_data_hlt01()
   saveRDS(df_hlt01, paste0("./results/", file_pattern_hlt01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_hlt01)

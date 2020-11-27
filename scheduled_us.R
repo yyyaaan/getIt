@@ -7,18 +7,20 @@ grep("\\.R", system("ps -ef", intern = TRUE), value = TRUE)
 suppressMessages({
   setwd("/home/yanpan/getIt")
   source("./src/ay01.R")
+  source("./src/hlt01.R")
 })
 
-def_interval <<- 39:199
+def_interval <<- 39:99
 
-loop_deps   <- "HEL TLL CPH"
-loop_dests  <- "PPT NAN"
-range_ddate <- "2021-04-03 2021-04-12"
-#the_days    <- 14
+# loop_deps   <- "HEL TLL CPH"
+# loop_dests  <- "PPT NAN"
+# range_ddate <- "2021-04-03 2021-04-12"
+# start_ay01(loop_deps, loop_dests, range_ddate, the_days = 12)
+# start_ay01(loop_deps, loop_dests, range_ddate, the_days = 15)
 
-start_ay01(loop_deps, loop_dests, range_ddate, the_days = 12)
-start_ay01(loop_deps, loop_dests, range_ddate, the_days = 15)
-
+start_hlt01(range_dates = "2021-01-01 2021-06-04",
+            loop_nights = c(3, 4),
+            loop_hotels = c(1, 2))
 
 do_not_run <- function(){
   source("./src/ay01.R")
