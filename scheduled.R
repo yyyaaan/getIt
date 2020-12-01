@@ -5,13 +5,14 @@
 
 ## 2020-09-30: QR&MRT tracking series replaced from Christmas 2020 to Summer 2021
 ##             QR destination removed ADL added AMS
-
+## 2020-11-30: Added HLT for following up series. No defined series needed.
 
 suppressMessages({
   .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
   setwd("/home/yanpan/getIt")
   source("./src/qr01.R")
   source("./src/mrt01.R")
+  source("./src/hlt01.R")
   source("./src/serving.R")
 })
 
@@ -45,13 +46,17 @@ qr_date_max <- Sys.Date() + 353 - qr_the_days - controller # fixed, interval is 
 qr_fu_deps  <- "HEL OSL TLL AMS"
 qr_fu_dests <- "SYD CBR MEL"
 qr_fu_dates <- seq(qr_date_max - 75*controller, length = 5, by = "-15 days") 
-### updated to ensure earliest of 2020-11-01
-qr_fu_dates <- qr_fu_dates[qr_fu_dates >= as.Date("2020-12-15")] %>% format("%Y-%m-%d") %>% paste(collapse = " ")
+qr_fu_dates <- qr_fu_dates[qr_fu_dates >= as.Date("2021-01-15")] %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
 mrt_date_max  <- Sys.Date() + 355 - 7
 mrt_fu_nights <- c(4, 7)
 mrt_fu_hotels <- c(1)
 mrt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
+
+hlt_date_max  <- mrt_date_max
+hlt_fu_nights <- c(3, 4)
+hlt_fu_hotels <- c(1, 2)
+hlt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
 
 # main pgm (no need to change below) --------------------------------------
@@ -70,18 +75,17 @@ suppressMessages(serve_qr01())
 logger("Worker started MRT01 fu", mrt_fu_dates)
 start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
- 
+
+logger("Worker started HLT01 fu", hlt_fu_dates)
+start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
+save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
+
 
 # defined series (not daily) ----------------------------------------------
- 
 
 logger("Worker started for QR01 ctrl", qr_oooo_dates)
 start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
-
-## lower the frequency to save resource for others
-## def_interval <<- 35:75
-
 
 logger("Worker started for MRT01 ctrl", mrt_oooo_dates)
 start_mrt01(mrt_oooo_dates, mrt_loop_nights, mrt_loop_hotels)
@@ -90,7 +94,8 @@ save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 suppressMessages(serve_qr01())
 suppressMessages(serve_mrt01())
 
+
+
 # all completed -----------------------------------------------------------
- 
-show_tasktime()
+
 cat(rep("=", 39), "\n", rep("=", 39), "\n")

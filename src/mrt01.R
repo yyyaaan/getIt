@@ -1,6 +1,6 @@
 source("./src/utilities.R")
 
-url_dest <<- c(
+url_mrt_dest <<- c(
   # St.Regis Bora Bora
   paste0('&countryName=PF&destinationAddress.city=Bora+Bora',
          '&destinationAddress.longitude=-151.696515',
@@ -41,7 +41,7 @@ start_mrt01 <- function(range_dates = "2020-12-15 2021-01-15", #"2021-05-01 2021
               paste0('https://www.marriott.com/search/default.mi?roomCount=1&numAdultsPerRoom=2',
                      '&fromDate=', format.Date(param_set$checkin [i], "%m/%d/%Y"),
                      '&toDate='  , format.Date(param_set$checkout[i], "%m/%d/%Y"),
-                     url_dest[param_set$hotel[i]]))
+                     url_mrt_dest[param_set$hotel[i]]))
   }
   
   ## call batch

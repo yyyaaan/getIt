@@ -49,7 +49,7 @@ show_exetime <- function(by_key = FALSE){
       print(summary(exetime[keyname == keys]))
     }    
   } else {
-    cat("Average runing time in seconds\n")
+    cat("Average Puppeteer-NodeJS running time in seconds\n")
     print(summary(exetime))
   }
 }

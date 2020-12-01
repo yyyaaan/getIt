@@ -1,7 +1,7 @@
 ### work in progress
 source("./src/utilities.R")
 
-url_dest <<- c(
+url_hlt_dest <<- c(
   "PPTMLHI", # Moorea
   "PPTBNCI"  # Bora Bora Conrad
 )
@@ -17,7 +17,7 @@ start_hlt01 <- function(range_dates = "2021-04-05 2021-04-11",
   param_set <- expand.grid(
     checkin = seq(date_range[1], date_range[2], "days"),
     nights  = loop_nights,
-    code    = url_dest[loop_hotels],
+    code    = url_hlt_dest[loop_hotels],
     stringsAsFactors = FALSE
   )
   param_set$checkout = param_set$checkin + param_set$nights
