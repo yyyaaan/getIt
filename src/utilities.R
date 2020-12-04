@@ -27,6 +27,7 @@ show_exetime <- function(by_key = FALSE){
     the_lines <- readLines(pp, warn = FALSE)
     
     ## skip if error
+    if(length(the_lines) == 0) next()
     if(substr(the_lines[1], 1, 5) == "error") next()
     
     pp %>% strsplit("/") %>% unlist() %>% 
