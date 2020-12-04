@@ -132,7 +132,7 @@ save_data_ay01 <- function(file_pattern_ay01){
   write_csv(df_ay01, paste0("./results/", file_pattern_ay01, format(Sys.time(), "_%H%M"), ".csv"))
   archive_files(file_pattern_ay01)
   
-  # util_bq_upload(df_mrt01, table_name = "MRT01")
+  # util_bq_upload(ay01_merged, table_name = "AY01")
 }
 
 

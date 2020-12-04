@@ -83,11 +83,11 @@ save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 
 # defined series (not daily) ----------------------------------------------
 
-logger("Worker started for QR01 ctrl", qr_oooo_dates)
+logger("Worker started QR01 ctrl", qr_oooo_dates)
 start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 
-logger("Worker started for MRT01 ctrl", mrt_oooo_dates)
+logger("Worker started MRT01 ctrl", mrt_oooo_dates)
 start_mrt01(mrt_oooo_dates, mrt_loop_nights, mrt_loop_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 
@@ -98,4 +98,5 @@ suppressMessages(serve_mrt01())
 
 # all completed -----------------------------------------------------------
 
+show_tasktime()
 cat(rep("=", 39), "\n", rep("=", 39), "\n")
