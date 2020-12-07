@@ -108,6 +108,16 @@ logger <- function(..., log_name = "getIt"){
   paste("/snap/bin/gcloud logging write", log_name, "'", text, "' --severity=INFO") %>% system()
 }
 
+loggerUS <- function(..., log_name = "getIt"){
+  
+  text = paste(..., collapse = " ")
+  text = paste("US:", text)
+  if(grepl("start", tolower(text))) cat("=\n")
+  
+  cat(get_time_str(), text, ifelse(grepl("completed", tolower(text)),"=========\n", "\n"))
+  line_to_user(text)
+}
+
 
 util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore"){
   bq_deauth()

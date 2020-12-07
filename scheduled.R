@@ -1,18 +1,24 @@
-###########################################################################
-###### This is a scheduled script, the scope is dependent on the date #####
-###########################################################################
+#######################################################################
+###  ______ _____  ### This is a scheduled script (date-dependent)  ###
+### |  ____|_   _| ###                                              ###
+### | |__    | |   ### - Full looping 4-day                         ###
+### |  __|   | |   ### - QR, MRT scheduled here                     ###
+### | |     _| |_  ###                                              ###
+### |_|    |_____| ###                                              ###
+#######################################################################
+
 # system("/usr/lib/R/bin/Rscript '/home/yanpan/getIt/scheduled.R'  >> '/home/yanpan/getIt/scheduled.log' 2>&1", wait = FALSE)
 
 ## 2020-09-30: QR&MRT tracking series replaced from Christmas 2020 to Summer 2021
 ##             QR destination removed ADL added AMS
 ## 2020-11-30: Added HLT for following up series. No defined series needed.
+## 2020-12-07: HLT moved to US server
 
 suppressMessages({
   .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
   setwd("/home/yanpan/getIt")
   source("./src/qr01.R")
   source("./src/mrt01.R")
-  source("./src/hlt01.R")
   source("./src/serving.R")
 })
 
@@ -53,12 +59,6 @@ mrt_fu_nights <- c(4, 7)
 mrt_fu_hotels <- c(1)
 mrt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
-hlt_date_max  <- mrt_date_max
-hlt_fu_nights <- c(3, 4)
-hlt_fu_hotels <- c(1, 2)
-hlt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
-
-
 # main pgm (no need to change below) --------------------------------------
 
 logger("updating currency exchange rate through ECB")
@@ -75,10 +75,6 @@ suppressMessages(serve_qr01())
 logger("Worker started MRT01 fu", mrt_fu_dates)
 start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
 save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
-
-logger("Worker started HLT01 fu", hlt_fu_dates)
-start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
-save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 
 
 # defined series (not daily) ----------------------------------------------

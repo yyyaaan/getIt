@@ -1,4 +1,4 @@
-const params  = ['https://all.accor.com/ssr/app/accor/rates/9924/index.en.shtml?dateIn=2021-01-16&nights=7&compositions=2&stayplus=false', 'acr_tmpx'];
+const params  = ['https://all.accor.com/ssr/app/accor/rates/9924/index.en.shtml?dateIn=2021-02-06&nights=4&compositions=2&stayplus=false', 'acr_tmpx'];
 const req_url   = params[0];
 const req_name  = params[1];
 const out_text  = params[2];

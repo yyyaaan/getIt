@@ -72,16 +72,20 @@ get_data_acr01 <- function(cached_txts){
       str_replace_all("From ", "") %>% str_split(" to ") %>% unlist() %>% mdy()
     ccy <- the_html %>% html_node(".booking-price__symbol") %>% html_text() %>%
       str_detect(., "\\u0082|€") %>% ifelse("EUR", "USD")
+
+    # sometimes it give total sometime average, adjust accordingly
+    rate_factor <- the_html %>% html_node("div.room-info__composition") %>% 
+      html_text() %>% str_detect("[A|a]verage") %>% ifelse(cico[2] - cico[1],1)
     
     # loop for every room
     for (the_room in the_html %>% html_nodes(".list-complete-item")){
       df <- rbind(df, data.frame(
-        hotel     = the_html %>% html_node("h3.basket-hotel-info__title") %>% html_trim(),
+        hotel     = hotel,
         check_in  = cico[1],
         check_out = cico[2],
         room_type = the_room %>% html_node(".room-info__title") %>% html_trim(),
         rate_type = the_room %>% html_nodes(".offer__options") %>% html_trim(),
-        rate_sum_pre = the_room %>% html_nodes(".offer__price") %>% html_number(),
+        rate_sum_pre = (the_room %>% html_nodes(".offer__price") %>% html_number()) * rate_factor,
         rate_sum_tax = the_room %>% html_nodes(".pricing-details__taxes") %>% html_number(),
         ccy = ccy,
         ts  = ts)) 
