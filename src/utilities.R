@@ -59,7 +59,7 @@ show_exetime <- function(by_key = FALSE){
 show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
   logs <- readLines(log_file)
   
-  key_words <- "nodes submitted|processed|cannot|nothing|NULL|retry|log|Info|There were|1st Qu|running time"
+  key_words <- "files|nodes submitted|processed|cannot|nothing|NULL|retry|log|Info|There were|1st Qu|running time|Task summary"
   
   if(clean_log){
     rid <- grep(key_words, logs, ignore.case = TRUE)
