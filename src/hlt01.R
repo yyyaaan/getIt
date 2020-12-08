@@ -70,8 +70,9 @@ get_data_hlt01 <- function(cached_txts){
       next()
     }
     
-    cico  <- the_html %>% html_node("[data-e2e='stayDates']") %>% html_text() %>%
-      str_extract_all("\\d+ .{3}") %>% unlist() %>% auto_date()
+    cico  <- the_html %>% html_node("[data-e2e='stayDates']") %>% html_text()  %>% 
+      str_replace_all("202\\d", "") %>% str_extract_all("\\d+ .{3}") %>% 
+      unlist() %>% auto_date()
     
     df <- rbind(df, data.frame(
       hotel     = the_html %>% html_node("[data-e2e='hotelExpander']") %>% html_text(),
