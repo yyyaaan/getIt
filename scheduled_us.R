@@ -2,20 +2,17 @@
 ### _    _  _____   ### This is a scheduled script (date-dependent) ###
 ### | |  | |/ ____| ###                                             ###
 ### | |  | | (___   ### - Full looping 4-day                        ###
-### | |  | |\___ \  ### - HLT, ACR, MRT-p   scheduled here          ###
+### | |  | |\___ \  ### - HLT, ACR scheduled here;                  ###
 ### | |__| |____) | ### - The results is not populated to dashboard ###
 ###  \____/|_____/  ###                                             ###
 #######################################################################
 # system("/usr/lib/R/bin/Rscript '/home/yanpan/getIt/scheduled_us.R'  >> '/home/yanpan/getIt/scheduled_us.log' 2>&1", wait = FALSE)
-
-# 2020-12-08 MRT01 now scheduled both on US and FI
 
 suppressMessages({
   .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
   setwd("/home/yanpan/getIt")
   source("./src/hlt01.R")
   source("./src/acr01.R")
-  source("./src/mrt01.R")
 })
 
 controller <- as.numeric(Sys.Date()) %% 4
@@ -34,12 +31,6 @@ acr_fu_nights <- c(3, 4)
 acr_fu_hotels <- c(1, 2)
 acr_fu_dates  <- (acr_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
-mrt_date_max  <- Sys.Date() + 355 - 7
-mrt_fu_nights <- c(3, 4)
-mrt_fu_hotels <- c(3, 4, 5)
-mrt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
-
-
 # main module -------------------------------------------------------------
 
 get_exchange_rate()
@@ -51,10 +42,6 @@ save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 loggerUS("Worker started ACR01 fu", acr_fu_dates)
 start_acr01(acr_fu_dates, acr_fu_nights, acr_fu_hotels)
 save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
-
-logger("Worker started MRT01 fu", mrt_fu_dates)
-start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
-save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 
 
 # all completed -----------------------------------------------------------
