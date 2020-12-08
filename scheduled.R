@@ -76,7 +76,6 @@ save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
 logger("Worker started QR01 fu", qr_fu_dates)
 start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
-suppressMessages(serve_qr01())
 
 suppressMessages(serve_qr01())
 suppressMessages(serve_mrt01())
