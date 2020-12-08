@@ -13,6 +13,7 @@
 ##             QR destination removed ADL added AMS
 ## 2020-11-30: Added HLT for following up series. No defined series needed.
 ## 2020-12-07: HLT moved to US server
+## 2020-12-08: MRT tracking is now replaced by follow-up. MRT distributed FI+US
 
 suppressMessages({
   .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
@@ -38,6 +39,7 @@ qr_oooo_dates <- c("2021-06-23",
                    "2021-07-23",
                    "2021-08-07")[controller + 1]
 
+# mrt_tracking disabled
 mrt_loop_nights <- c(3, 4)
 mrt_loop_hotels <- c(2, 3, 4, 5)
 mrt_oooo_dates  <- c("2021-06-16 2021-06-30", 
@@ -55,8 +57,8 @@ qr_fu_dates <- seq(qr_date_max - 75*controller, length = 5, by = "-15 days")
 qr_fu_dates <- qr_fu_dates[qr_fu_dates >= as.Date("2021-01-15")] %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
 mrt_date_max  <- Sys.Date() + 355 - 7
-mrt_fu_nights <- c(4, 7)
-mrt_fu_hotels <- c(1)
+mrt_fu_nights <- c(3, 4, 7)
+mrt_fu_hotels <- c(1, 2)
 mrt_fu_dates  <- (mrt_date_max - c(86*controller + 85, 86*controller)) %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
 # main pgm (no need to change below) --------------------------------------
@@ -67,15 +69,17 @@ get_exchange_rate()
 
 # follow-up series --------------------------------------------------------
 
+logger("Worker started MRT01 fu", mrt_fu_dates)
+start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
+save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
+
 logger("Worker started QR01 fu", qr_fu_dates)
 start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 suppressMessages(serve_qr01())
 
-logger("Worker started MRT01 fu", mrt_fu_dates)
-start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
-save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
-
+suppressMessages(serve_qr01())
+suppressMessages(serve_mrt01())
 
 # defined series (not daily) ----------------------------------------------
 
@@ -83,12 +87,7 @@ logger("Worker started QR01 ctrl", qr_oooo_dates)
 start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 
-logger("Worker started MRT01 ctrl", mrt_oooo_dates)
-start_mrt01(mrt_oooo_dates, mrt_loop_nights, mrt_loop_hotels)
-save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
-
 suppressMessages(serve_qr01())
-suppressMessages(serve_mrt01())
 
 
 
