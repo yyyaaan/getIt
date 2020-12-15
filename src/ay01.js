@@ -1,4 +1,4 @@
-const params  = ['https://www.finnair.com/FI/GB/deeplink?PREFILLED_INPUT=TRIP_TYPE=multiple|B_DATES=202103290000:202104170000|E_DATES=|B_LOCS=TLL:SYD|E_LOCS=SYD:HEL|MAIN_PAX=ADT|NB_MAIN_PAX=1|NB_CHD=0|NB_INF=0|CABIN=B|IS_FLEX=false|IS_AWARD=false&utm_source=meta-search-engine&utm_medium=deeplink', 'ay01_tmp'];
+const params  = ['https://www.finnair.com/FI/GB/deeplink?PREFILLED_INPUT=TRIP_TYPE=multiple|B_DATES=202105290000:202106170000|E_DATES=|B_LOCS=HEL:PPT|E_LOCS=PPT:HEL|MAIN_PAX=ADT|NB_MAIN_PAX=1|NB_CHD=0|NB_INF=0|CABIN=E|IS_FLEX=false|IS_AWARD=false&utm_source=meta-search-engine&utm_medium=deeplink', 'ay01_tmp'];
 const req_url   = params[0];
 const req_name  = params[1];
 const puppeteer = require('puppeteer');

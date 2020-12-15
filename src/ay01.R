@@ -1,12 +1,51 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
 
-### pending error handling when requested route not available
+### ?pending error handling when requested route not available
+
+start_ay01_special <- function(keyword = "Tahiti", controller){
+  
+  if(tolower(keyword) == "tahiti"){
+    
+    date_range <- seq(as.Date("2021-05-03"), as.Date("2021-12-05"), "days")
+    
+    param_set <- expand.grid(desta = c("HEL"),
+                             destb = c("PPT"),
+                             destc = c("PPT"),
+                             destd = c("HEL", "TLL"),
+                             ddate = date_range,
+                             rdate = date_range,
+                             stringsAsFactors = FALSE) %>%
+      filter(rdate-ddate > 9, rdate-ddate < 23,
+             weekdays(ddate) %in% c("Tuesday", "Friday", "Sunday"), 
+             weekdays(rdate) %in% c("Wednesday", "Saturday"))
+    
+    param_set <- param_set[1:172 + controller * 172, ]
+    
+    ## build url
+    urls <- character()
+    for(i in sample(1:nrow(param_set))){
+      urls <- c(urls, flight_url_finnair_any(
+        dates = c(as.Date(param_set$ddate[i]), as.Date(param_set$rdate[i])),
+        dests = c(param_set$desta[i], param_set$destb[i], param_set$destc[i], param_set$destd[i]),
+        cabin = "E"))
+    }
+    
+    ## call batch, here only 1 retry is performed
+    start_batch(urls, jssrc = './src/ay01.js', file_init = 'ay01')
+    file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("ay01_", .)
+    start_retry(wildcard = file_pattern, jssrc = './src/ay01.js')
+    return("AY Tahiti completed")
+  }
+  
+  return("No item found.")
+}
 
 start_ay01 <- function(loop_deps   = "CPH TLL ARN HEL OSL", 
                        loop_dests  = "SYD MEL", 
                        range_ddate = "2021-05-10 2021-05-12",
-                       the_days    = 15){
+                       the_days    = 15,
+                       skip_rule   = "" ){  #skip_rule:"(?i)arn (mel|syd) .{3} arn" "(?i)ARN.{9}ARN" 
   
   date_range <- range_ddate %>% strsplit(" ") %>% unlist() %>% as.Date()
   ## cross join parameters, then shuffle rows
@@ -18,6 +57,12 @@ start_ay01 <- function(loop_deps   = "CPH TLL ARN HEL OSL",
     ddate = seq(date_range[1], date_range[2], "days"),
     stringsAsFactors = FALSE
   )
+  
+  ## remove specified routes per skip_rule
+  ## example skip_rule <- "(?i)arn (mel|syd) .{3} arn"
+  if(length(skip_rule)) {
+    param_set %>% filter(!str_detect(paste(desta, destb, destc, destd), skip_rule))
+  }
   
   ## build url
   urls <- character()
@@ -75,6 +120,7 @@ get_data_ay01 <- function(cached_txts){
       fare  = cells$`data-fare-family`,
       time1 = cells$`data-departure-time`,
       time2 = cells$`data-arrival-time`,
+      cabin = cells$`data-cabins`,
       ccy   = the_ccy, 
       ts    = the_time))
     
@@ -95,21 +141,29 @@ get_data_ay01 <- function(cached_txts){
                           to, paste0(timedur %/% 60, "h", timedur %% 60, "min")),
            ddate  = ddate %>% ymd_hm() %>% as_date(),
            price  = as.numeric(price),
+           cabin  = cabin %>% str_detect("B") %>% ifelse("B", "E"),
            eur    = price/rate,
            tss    = ts %>% ymd_hms() %>% date()) %>%
-    select(route, inout, flight, from, to, ddate, fare, eur, price, ccy, tss, ts)
+    select(route, inout, flight, cabin, from, to, ddate, fare, eur, price, ccy, tss, ts)
   
   return(df)
 }
 
-serve_ay01 <- function(df){
-  df_day <- df %>% 
-    group_by(route, inout, from, to, ddate) %>%
-    summarise(eur = min(eur)) %>% 
-    left_join(df) %>%             
-    group_by(route, inout, from, to, ddate) %>%
-    summarise(eur = min(eur), fare = toString(unique(fare)))
+get_simple_ay01 <- function(df){
   
+  # similar to QR01, only lowest value per day.
+  df %>% 
+    group_by(route, inout, from, to, cabin, ddate, tss, ts) %>%
+    summarise(eur = min(eur), .groups = 'drop') %>% 
+    mutate(flight = ifelse(str_detect(inout, "Out"), 
+                           str_split_fixed(route, "\\|", 2)[1],
+                           str_split_fixed(route, "\\|", 2)[2]))
+  
+}
+
+serve_ay01 <- function(df){
+  
+  # input simple_ay01 (lowest by day)
   df_route <- df_day %>% 
     filter(inout == "Outbound") %>%
     left_join(df %>% filter(inout == "Inbound") %>% 
@@ -129,10 +183,12 @@ save_data_ay01 <- function(file_pattern_ay01){
   # file_pattern_ay01 <- "ay01_"
   df_ay01 <- list.files("./cache/", file_pattern_ay01, full.names = T) %>% get_data_ay01()
   saveRDS(df_ay01, paste0("./results/", file_pattern_ay01, format(Sys.time(), "_%H%M"), ".rds"))
-  write_csv(df_ay01, paste0("./results/", file_pattern_ay01, format(Sys.time(), "_%H%M"), ".csv"))
   archive_files(file_pattern_ay01)
-  
-  # util_bq_upload(ay01_merged, table_name = "AY01")
+
+    ### detailed AY in AY02, daily lowest in AY01
+  util_bq_upload(df_ay01, table_name = "AY02")
+  util_bq_upload(df_ay01 %>% get_simple_ay01(), table_name = "AY01")
+
 }
 
 
