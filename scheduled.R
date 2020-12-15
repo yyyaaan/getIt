@@ -14,6 +14,7 @@
 ## 2020-11-30: Added HLT for following up series. No defined series needed.
 ## 2020-12-07: HLT moved to US server
 ## 2020-12-08: MRT tracking is now replaced by follow-up.
+## 2020-12-13: QR tracking is disabled; partially replaced by follow-up.
 
 suppressMessages({
   .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
@@ -28,25 +29,6 @@ suppressMessages({
 controller <- as.numeric(Sys.Date()) %% 4
 def_interval <<- 20:35
 qr_the_days<- 18 
-
-# param def for tracking ---------------------------------------------------
-
-qr_loop_deps  <- "CPH TLL ARN HEL OSL"
-qr_loop_deps2 <- "TLL ARN HEL OSL"
-qr_loop_dests <- "SYD CBR ADL MEL"
-qr_oooo_dates <- c("2021-06-23", 
-                   "2021-07-08", 
-                   "2021-07-23",
-                   "2021-08-07")[controller + 1]
-
-# mrt_tracking disabled
-mrt_loop_nights <- c(3, 4)
-mrt_loop_hotels <- c(2, 3, 4, 5)
-mrt_oooo_dates  <- c("2021-06-16 2021-06-30", 
-                     "2021-07-01 2021-07-15", 
-                     "2021-07-16 2021-07-31", 
-                     "2021-08-01 2021-08-15")[controller + 1]
-
 
 # param def for follow up -------------------------------------------------
 
@@ -78,16 +60,6 @@ logger("Worker started QR01 fu", qr_fu_dates)
 start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 suppressMessages(serve_qr01())
-
-# defined series (not daily) ----------------------------------------------
-
-logger("Worker started QR01 ctrl", qr_oooo_dates)
-start_qr01 (qr_loop_deps, qr_loop_dests, qr_oooo_dates, qr_the_days)
-save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
-
-suppressMessages(serve_qr01())
-
-
 
 # all completed -----------------------------------------------------------
 
