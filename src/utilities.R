@@ -77,7 +77,7 @@ show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
   df <- data.frame(task_name = task, time_elapsed = as.duration(tstart %--% tend) / dminutes(1)) 
   print(df)
   
-  paste(df$task_name, round(df$time_elapsed, 0)) %>% paste(collapse = "; ") %>% logger("Task summary:", .)
+  # paste(df$task_name, round(df$time_elapsed, 0)) %>% paste(collapse = "; ") %>% logger("Task summary:", .)
 }
 
 
