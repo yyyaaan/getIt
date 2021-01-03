@@ -2,6 +2,7 @@ library(tidyverse)
 library(lubridate)
 library(rvest)
 library(DT)
+library(jsonlite)
 library(bigrquery); library(googleAuthR) #for bigQuery
 
 ## the global parameter can be overriden as needed
@@ -97,6 +98,48 @@ line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
           stderr = FALSE)
 }
 
+line_richmsg <- function(title, df, var_card, var_rows, to = 'U4de6a435823ee64a0b9254783921216a'){
+  
+  flex_box_text <- function(text = "sep", size = "xs", wrap = TRUE, color = "#aaaaaa"){
+    list(type = "text", text = text, size = size, color = color, wrap = wrap)
+  }
+  
+  all_cards <- list()
+  
+  for(card_title in df %>% pull(var_card) %>% unique()){
+    
+    all_rows <- list(flex_box_text(card_title, color = "#333333"))
+    
+    for(each_row in df %>% filter(!!sym(var_card) == card_title) %>% pull(var_rows))
+      all_rows[[length(all_rows)+1]] <- flex_box_text(each_row)
+    
+    this_card <- list(type = "bubble", size = "micro", 
+                      body = list(type = "box", layout = "vertical",
+                                  contents = all_rows))
+    
+    all_cards[[length(all_cards)+1]] <- this_card
+  }
+  
+  
+  msg <- list(to = to,
+              messages = list(list(
+                type = "flex", altText = title,
+                contents = list(type = "carousel", contents = all_cards))
+              )
+  )
+  
+  system2("curl",
+          args = c("-s", "-v", "-X",
+                   "POST https://api.line.me/v2/bot/message/push",
+                   "-H", "'Content-Type: application/json'",
+                   "-H", sprintf("'Authorization: Bearer %s'", readLines('/home/yanpan/.token_line')[1]),
+                   # "-d", sprintf("'{\"to\": \"%s\", \"messages\": [%s]}'", to, toJSON(msg))
+                   "-d", sprintf("'%s'", toJSON(msg, auto_unbox = T))
+          ),
+          stdout = F, 
+          stderr = F)
+}
+
 logger <- function(..., log_name = "getIt"){
   
   text = paste(..., collapse = " ")
@@ -119,7 +162,7 @@ loggerUS <- function(..., log_name = "getIt"){
 }
 
 
-util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore"){
+util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore", silent = FALSE){
   bq_deauth()
   bq_auth(path = "/home/yanpan/.gcp.json")
   
@@ -131,7 +174,7 @@ util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore")
                     create_disposition = "CREATE_IF_NEEDED",
                     write_disposition  = "WRITE_APPEND")
   
-  logger("BigQuery Upload Completed for", table_name)
+  if(!silent) logger("BigQuery Upload Completed for", table_name)
 }
 
 # currency exchange -------------------------------------------------------

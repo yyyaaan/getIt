@@ -113,7 +113,22 @@ get_data_acr01 <- function(cached_txts){
 save_data_acr01 <- function(file_pattern_acr01){
   # file_pattern_acr01 <- paste0("acr01_", gsub("-", "", Sys.Date()))
   df_acr01 <- list.files("./cache/", file_pattern_acr01, full.names = T) %>% get_data_acr01()
+  
+  # send the latest pricing
+  df_acr01 %>% 
+    mutate(wk = isoweek(check_in), rm = hotel)  %>% 
+    group_by(nights, rm, wk) %>%
+    summarise(best_daily = min(eur_avg) %>% ceiling(),
+              week_start = min(check_in) %>% format("%d%b"),
+              .groups = "drop") %>%
+    pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
+    unite("out", rev(colnames(.)[-1]), sep = " ") %>%
+    line_richmsg("Accor latest prices", ., "rm", "out")
+  
+  # continue the routine
   saveRDS(df_acr01, paste0("./results/", file_pattern_acr01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_acr01)
-  util_bq_upload(df_acr01, table_name = "ACR01")
+  util_bq_upload(df_acr01, table_name = "ACR01", silent = T)
 }
+
+

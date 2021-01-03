@@ -186,7 +186,7 @@ save_data_ay01 <- function(file_pattern_ay01){
   archive_files(file_pattern_ay01)
 
     ### detailed AY in AY02, daily lowest in AY01
-  util_bq_upload(df_ay01, table_name = "AY02")
+  util_bq_upload(df_ay01, table_name = "AY02", silent = T)
   util_bq_upload(df_ay01 %>% get_simple_ay01(), table_name = "AY01")
 
 }

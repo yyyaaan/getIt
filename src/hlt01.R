@@ -104,7 +104,21 @@ save_data_hlt01 <- function(file_pattern_hlt01){
   # file_pattern_hlt01 <- paste0("hlt01_", gsub("-", "", Sys.Date()))
   # file_pattern_hlt01 <- "hlt01_"
   df_hlt01 <- list.files("./cache/", file_pattern_hlt01, full.names = T) %>% get_data_hlt01()
+
+  # send HLT key figures
+  df_hlt01 %>% 
+    mutate(wk = isoweek(check_in), rm = hotel)  %>% 
+    group_by(nights, rm, wk) %>%
+    summarise(best_daily = min(eur_avg) %>% ceiling(),
+              week_start = min(check_in) %>% format("%d%b"),
+              .groups = "drop") %>%
+    pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
+    unite("out", rev(colnames(.)[-1]), sep = " ") %>%
+    line_richmsg("Hilton pricing (pretax)", ., "rm", "out")
+  
+  # continue the routine
   saveRDS(df_hlt01, paste0("./results/", file_pattern_hlt01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_hlt01)
-  util_bq_upload(df_hlt01, table_name = "HLT01")
+  util_bq_upload(df_hlt01, table_name = "HLT01", silent = T)
 }
+

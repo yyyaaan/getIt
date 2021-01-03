@@ -120,8 +120,22 @@ get_data_mrt01 <- function(cached_txts){
 save_data_mrt01 <- function(file_pattern_mrt01){
   # file_pattern_mrt01 <- paste0("mrt01_", gsub("-", "", Sys.Date()))
   df_mrt01 <- list.files("./cache/", file_pattern_mrt01, full.names = T) %>% get_data_mrt01()
+  
+  # summary of St.Regis Pricing
+  df_mrt01 %>% 
+    filter(str_detect(hotel, "(?i)Regis.*Bora"), str_detect(rate_type, "(?i)Dining")) %>%
+    mutate(wk = isoweek(check_in), rm = str_extract(room_type, "[a-zA-Z ]*"))  %>% 
+    group_by(nights, rm, wk) %>%
+    summarise(best_daily = min(eur_avg) %>% ceiling(),
+              week_start = min(check_in) %>% format("%d%b"),
+              .groups = "drop") %>%
+    pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
+    unite("out", rev(colnames(.)[-1]), sep = " ") %>%
+    line_richmsg("St.Regis Dinning Packages", ., "rm", "out")
+
+  # continue the routine
   saveRDS(df_mrt01, paste0("./results/", file_pattern_mrt01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_mrt01)
-  util_bq_upload(df_mrt01, table_name = "MRT01")
+  util_bq_upload(df_mrt01, table_name = "MRT01", silent = TRUE)
 }
 
