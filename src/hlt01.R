@@ -64,6 +64,8 @@ get_data_hlt01 <- function(cached_txts){
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
     if (the_html %>% html_text() %>% str_sub(1, 5) == "error") the_flag = "Sold Out"
+    if(the_html %>% html_nodes("[data-e2e='undefinedText']") %>% html_text() %>% length())
+      the_flag <- "Sold Out"
     
     if(length(the_flag) && the_flag == "Sold Out"){
       j <- j + 1
