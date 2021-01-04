@@ -19,7 +19,7 @@ serve_qr01  <- function(n_recent = 10, min_date = as.Date("2021-05-15"), min_day
     df_all <- union_all(df_all, dfs[[i]])
   }
   
-  ### determing latest records
+  ### determining latest records
   df <- df_all %>% 
     group_by(route, ddate, inout) %>%
     summarise(ts = max(ts)) %>%
@@ -79,7 +79,7 @@ serve_qr01  <- function(n_recent = 10, min_date = as.Date("2021-05-15"), min_day
   remove(the_df, p)
   
   
-  # joined flights segements ------------------------------------------------
+  # joined flights segments ------------------------------------------------
   
   df_combo <- df %>% 
     filter(inout == "Outbound") %>%

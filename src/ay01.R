@@ -184,10 +184,29 @@ save_data_ay01 <- function(file_pattern_ay01){
   df_ay01 <- list.files("./cache/", file_pattern_ay01, full.names = T) %>% get_data_ay01()
   saveRDS(df_ay01, paste0("./results/", file_pattern_ay01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_ay01)
-
+  df_ay01_simple <- df_ay01 %>% get_simple_ay01()
+  
     ### detailed AY in AY02, daily lowest in AY01
   util_bq_upload(df_ay01, table_name = "AY02", silent = T)
-  util_bq_upload(df_ay01 %>% get_simple_ay01(), table_name = "AY01")
+  util_bq_upload(df_ay01_simple, table_name = "AY01", silent = T)
+  
+  # send line notification
+  df_ay01_simple %>% 
+    filter(inout == "Outbound") %>%
+    select(route, ddate, eur1 = eur, ts) %>%
+    inner_join(df_ay01_simple %>%
+                 filter(inout == "Inbound") %>%
+                 select(route, rdate = ddate, eur2 = eur, ts),
+               by = c("route", "ts")) %>%
+    mutate(eur = eur1 + eur2,
+           the_period = paste0("AY_PPT ", rdate-ddate, "days"),
+           label = ifelse(str_detect(route, "Helsinki.*Helsinki"), "HEL", "ANY"),
+           wk = ddate %>% format("%d%b")) %>%  #%>% floor_date("week", 1) 
+    group_by(the_period, label, wk) %>%
+    summarise(best_rates = min(eur) %>% ceiling(), .groups = "drop") %>%
+    pivot_wider(id_cols = c('the_period', 'wk'), names_from = label, values_from = best_rates) %>%
+    unite("out", sort(colnames(.)[-1]), sep = " ")  %>%
+    line_richmsg("AY flights", ., "the_period", "out")
 
 }
 

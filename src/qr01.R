@@ -102,11 +102,30 @@ get_data_qr01 <- function(cached_txts){
 save_data_qr01 <- function(file_pattern_qr01){
   # file_pattern_qr01 <- paste0("qr01_", gsub("-", "", Sys.Date()))
   # file_pattern_qr01 <- "qr01_"
-  
   df_qr01 <- list.files("./cache/", file_pattern_qr01, full.names = T) %>% get_data_qr01()
   saveRDS(df_qr01, paste0("./results/", file_pattern_qr01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_qr01)
-  util_bq_upload(df_qr01, table_name = "QR01")
+  util_bq_upload(df_qr01, table_name = "QR01", silent = T)
+  
+  # send line notification
+  df_qr01 %>% 
+    filter(inout == "Outbound") %>%
+    select(route, ddate, eur1 = eur, ts) %>%
+    inner_join(df_qr01 %>%
+                 filter(inout == "Inbound") %>%
+                 select(route, rdate = ddate, eur2 = eur, ts),
+               by = c("route", "ts")) %>%
+    filter((rdate-ddate) %in% (15:29)) %>%
+    mutate(eur = eur1 + eur2,
+           short_days = floor(as.numeric(rdate-ddate) / 3),
+           the_period = paste0("QR_AUS ", 3*short_days, "-", 3*short_days + 2, "days"),
+           label = ifelse(str_detect(route, "Helsinki"), "HEL", "ANY"),
+           wk = (ddate) %>% floor_date("week", 1) %>% format("%d%b")) %>% 
+    group_by(the_period, label, wk) %>%
+    summarise(best_rates = min(eur) %>% ceiling(), .groups = "drop") %>%
+    pivot_wider(id_cols = c('the_period', 'wk'), names_from = label, values_from = best_rates) %>%
+    unite("out", sort(colnames(.)[-1]), sep = " ") %>%
+    line_richmsg("QR flights", ., "the_period", "out")
 }
 
 
