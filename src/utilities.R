@@ -67,16 +67,16 @@ show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
     writeLines(logs[-rid], log_file)
   }
   
-  logs <- grep(format(Sys.Date(), "%Y-%m-%d"), logs, value = TRUE)
+  # logs <- grep(format(Sys.Date(), "%Y-%m-%d"), logs, value = TRUE)
   
-  task   <- grep("worker", logs, ignore.case = TRUE, value = TRUE) %>% 
-    substr(35, 999) %>% 
-    gsub("\\d|-|=", "", .) %>% gsub("  ", "", .) %>% trimws()
-  tstart <- grep("worker",   logs, ignore.case = TRUE, value = TRUE) %>% substr(1, 19) %>% ymd_hms()
-  tend   <- grep("bigquery", logs, ignore.case = TRUE, value = TRUE) %>% substr(1, 19) %>% ymd_hms()
+  # task   <- grep("worker", logs, ignore.case = TRUE, value = TRUE) %>% 
+  #   substr(35, 999) %>% 
+  #   gsub("\\d|-|=", "", .) %>% gsub("  ", "", .) %>% trimws()
+  # tstart <- grep("worker",   logs, ignore.case = TRUE, value = TRUE) %>% substr(1, 19) %>% ymd_hms()
+  # tend   <- grep("bigquery", logs, ignore.case = TRUE, value = TRUE) %>% substr(1, 19) %>% ymd_hms()
   
-  df <- data.frame(task_name = task, time_elapsed = as.duration(tstart %--% tend) / dminutes(1)) 
-  print(df)
+  # df <- data.frame(task_name = task, time_elapsed = as.duration(tstart %--% tend) / dminutes(1)) 
+  # print(df)
   
   # paste(df$task_name, round(df$time_elapsed, 0)) %>% paste(collapse = "; ") %>% logger("Task summary:", .)
 }
