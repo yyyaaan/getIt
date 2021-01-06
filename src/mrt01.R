@@ -123,16 +123,18 @@ save_data_mrt01 <- function(file_pattern_mrt01){
   
   # summary of St.Regis Pricing
   df_mrt01 %>% 
+    add_row(df_mrt01 %>% mutate(room_type = " ANY")) %>%
     filter(str_detect(hotel, "(?i)Regis.*Bora"), str_detect(rate_type, "(?i)Dining")) %>%
-    mutate(wk = isoweek(check_in), rm = str_extract(room_type, "[a-zA-Z ]*"))  %>% 
-    group_by(nights, rm, wk) %>%
+    mutate(wk = isoweek(check_in), 
+           rm = str_extract(room_type, "[a-zA-Z ]*"),
+           week_start = floor_date(check_in, "week", 1) %>% format("%d%b"))  %>% 
+    group_by(nights, rm, week_start) %>%
     summarise(best_daily = min(eur_avg) %>% ceiling(),
-              week_start = min(check_in) %>% format("%d%b"),
               .groups = "drop") %>%
     pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
     unite("out", rev(colnames(.)[-1]), sep = " ") %>%
     line_richmsg("St.Regis Dinning Packages", ., "rm", "out")
-
+  
   # continue the routine
   saveRDS(df_mrt01, paste0("./results/", file_pattern_mrt01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_mrt01)

@@ -51,6 +51,7 @@ save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 
 # all completed -----------------------------------------------------------
 
+show_tasktime("./scheduled_us.log")
 cat(rep("=", 29), "\n")
 
 

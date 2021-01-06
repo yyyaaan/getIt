@@ -116,10 +116,13 @@ save_data_acr01 <- function(file_pattern_acr01){
   
   # send the latest pricing
   df_acr01 %>% 
-    mutate(wk = isoweek(check_in), rm = hotel)  %>% 
-    group_by(nights, rm, wk) %>%
+    add_row(df_acr01 %>% mutate(room_type = "ANY")) %>%
+    filter(str_detect(hotel, "(?i)Moorea"), str_detect(rate_type, "(?i)savor")) %>%
+    mutate(wk = isoweek(check_in), 
+           rm = str_extract(room_type, "[a-zA-Z ]*"),
+           week_start = floor_date(check_in, "week", 1) %>% format("%d%b"))  %>% 
+    group_by(nights, rm, week_start) %>%
     summarise(best_daily = min(eur_avg) %>% ceiling(),
-              week_start = min(check_in) %>% format("%d%b"),
               .groups = "drop") %>%
     pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
     unite("out", rev(colnames(.)[-1]), sep = " ") %>%
@@ -130,5 +133,3 @@ save_data_acr01 <- function(file_pattern_acr01){
   archive_files(file_pattern_acr01)
   util_bq_upload(df_acr01, table_name = "ACR01", silent = T)
 }
-
-
