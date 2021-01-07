@@ -109,14 +109,14 @@ save_data_hlt01 <- function(file_pattern_hlt01){
 
   # send HLT key figures
   df_hlt01 %>% 
-    mutate(wk = isoweek(check_in), rm = hotel)  %>% 
-    group_by(nights, rm, wk) %>%
-    summarise(best_daily = min(eur_avg) %>% ceiling(),
-              week_start = min(check_in) %>% format("%d%b"),
-              .groups = "drop") %>%
+    mutate(wk = isoweek(check_in), rm = hotel,
+           check_in = floor_date(check_in, "week", 1),
+           week_start = format(check_in, "%d%b"))  %>% 
+    group_by(nights, rm, check_in, week_start) %>%
+    summarise(best_daily = min(eur_avg) %>% ceiling(), .groups = "drop") %>%
     pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
     unite("out", rev(colnames(.)[-1]), sep = " ") %>%
-    line_richmsg("Hilton pricing (pretax)", ., "rm", "out")
+    line_richmsg("Hilton pricing (pretax)", ., "rm", "out", debug = FALSE)
   
   # continue the routine
   saveRDS(df_hlt01, paste0("./results/", file_pattern_hlt01, format(Sys.time(), "_%H%M"), ".rds"))

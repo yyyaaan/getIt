@@ -120,8 +120,12 @@ save_data_qr01 <- function(file_pattern_qr01){
            short_days = floor(as.numeric(rdate-ddate) / 3),
            the_period = paste0("QR_AUS ", 3*short_days, "-", 3*short_days + 2, "days"),
            label = ifelse(str_detect(route, "Helsinki"), "HEL", "ANY"),
-           wk = (ddate) %>% floor_date("week", 1) %>% format("%d%b")) %>% 
-    group_by(the_period, label, wk) %>%
+           ddate = floor_date(ddate, "week", 1),
+           wk = format(ddate, "%d%b")) %>% 
+    add_row(., mutate(., the_period = "QR_AUS  any*", 
+                      ddate = ddate %>% floor_date("week", 1),
+                      wk =  ddate %>% format("w%d%b"))) %>%
+    group_by(the_period, label, ddate, wk) %>%
     summarise(best_rates = min(eur) %>% ceiling(), .groups = "drop") %>%
     pivot_wider(id_cols = c('the_period', 'wk'), names_from = label, values_from = best_rates) %>%
     unite("out", sort(colnames(.)[-1]), sep = " ") %>%

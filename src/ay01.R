@@ -201,12 +201,15 @@ save_data_ay01 <- function(file_pattern_ay01){
     mutate(eur = eur1 + eur2,
            the_period = paste0("AY_PPT ", rdate-ddate, "days"),
            label = ifelse(str_detect(route, "Helsinki.*Helsinki"), "HEL", "ANY"),
-           wk = ddate %>% format("%d%b")) %>%  #%>% floor_date("week", 1) 
-    group_by(the_period, label, wk) %>%
+           wk = ddate %>% format("%d%b")) %>% 
+    add_row(., mutate(., the_period = "AY_PPT  any*", 
+                      ddate = ddate %>% floor_date("week", 1),
+                      wk =  ddate %>% format("w%d%b"))) %>%
+    group_by(the_period, label, ddate, wk) %>%
     summarise(best_rates = min(eur) %>% ceiling(), .groups = "drop") %>%
     pivot_wider(id_cols = c('the_period', 'wk'), names_from = label, values_from = best_rates) %>%
     unite("out", sort(colnames(.)[-1]), sep = " ")  %>%
-    line_richmsg("AY flights", ., "the_period", "out")
+    line_richmsg("AY flights", ., "the_period", "out", debug = F)
 
 }
 

@@ -116,14 +116,14 @@ save_data_acr01 <- function(file_pattern_acr01){
   
   # send the latest pricing
   df_acr01 %>% 
-    add_row(df_acr01 %>% mutate(room_type = "ANY")) %>%
+    add_row(df_acr01 %>% mutate(room_type = "ANY Sofitel Moorea HB")) %>%
     filter(str_detect(hotel, "(?i)Moorea"), str_detect(rate_type, "(?i)savor")) %>%
     mutate(wk = isoweek(check_in), 
            rm = str_extract(room_type, "[a-zA-Z ]*"),
-           week_start = floor_date(check_in, "week", 1) %>% format("%d%b"))  %>% 
-    group_by(nights, rm, week_start) %>%
-    summarise(best_daily = min(eur_avg) %>% ceiling(),
-              .groups = "drop") %>%
+           check_in = floor_date(check_in, "week", 1),
+           week_start = format(check_in, "%d%b"))  %>% 
+    group_by(nights, rm, check_in, week_start) %>%
+    summarise(best_daily = min(eur_avg) %>% ceiling(), .groups = "drop") %>%
     pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
     unite("out", rev(colnames(.)[-1]), sep = " ") %>%
     line_richmsg("Accor latest prices", ., "rm", "out")

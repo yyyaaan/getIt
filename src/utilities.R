@@ -5,7 +5,7 @@ library(DT)
 library(jsonlite)
 library(bigrquery); library(googleAuthR) #for bigQuery
 
-## the global parameter can be overriden as needed
+## the global parameter can be overridden as needed
 def_break  <- 199:299
 def_n_jobs <- 6
 def_interval <- 20:40
@@ -98,7 +98,8 @@ line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
           stderr = FALSE)
 }
 
-line_richmsg <- function(title, df, var_card, var_rows, to = 'U4de6a435823ee64a0b9254783921216a'){
+line_richmsg <- function(title, df, var_card, var_rows, debug = FALSE,
+                         to = 'U4de6a435823ee64a0b9254783921216a'){
   
   flex_box_text <- function(text = "sep", size = "xs", wrap = TRUE, color = "#aaaaaa"){
     list(type = "text", text = text, size = size, color = color, wrap = wrap)
@@ -120,13 +121,12 @@ line_richmsg <- function(title, df, var_card, var_rows, to = 'U4de6a435823ee64a0
     all_cards[[length(all_cards)+1]] <- this_card
   }
   
+  flx <- list(type = "carousel", contents = all_cards)
+  if(debug) return(toJSON(flx, auto_unbox = T))
   
-  msg <- list(to = to,
-              messages = list(list(
-                type = "flex", altText = title,
-                contents = list(type = "carousel", contents = all_cards))
-              )
-  )
+  msg <- list(to = to, messages = list(
+    list(type = "flex", altText = title, contents = flx)))
+  
   
   system2("curl",
           args = c("-s", "-v", "-X",
