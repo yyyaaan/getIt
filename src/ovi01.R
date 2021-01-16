@@ -1,4 +1,4 @@
-def_interval <<- 3:39
+def_interval <<- 3:9
 
 get_from_href <- function(the_id){
   the_html <- the_id %>% paste0("https://www.etuovi.com", .) %>% read_html()
