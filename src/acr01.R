@@ -116,8 +116,8 @@ save_data_acr01 <- function(file_pattern_acr01){
   
   # send the latest pricing
   df_acr01 %>% 
-    add_row(df_acr01 %>% mutate(room_type = "ANY Sofitel Moorea HB")) %>%
-    filter(str_detect(hotel, "(?i)Moorea"), str_detect(rate_type, "(?i)savor")) %>%
+    add_row(df_acr01 %>% mutate(room_type = "ANY Sofitel Moorea")) %>%
+    filter(str_detect(hotel, "(?i)Moorea")) %>%
     mutate(wk = isoweek(check_in), 
            rm = str_extract(room_type, "[a-zA-Z ]*"),
            check_in = floor_date(check_in, "week", 1),
