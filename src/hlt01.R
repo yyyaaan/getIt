@@ -59,7 +59,7 @@ get_data_hlt01 <- function(cached_txts){
   
   
   for(the_file in cached_txts){
-    
+
     the_html <- read_html(the_file)
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
@@ -72,18 +72,21 @@ get_data_hlt01 <- function(cached_txts){
       next()
     }
     
-    cico  <- the_html %>% html_node("[data-e2e='stayDates']") %>% html_text()  %>% 
+    # data-e2e changed to data-testid on 2021-01-22
+    # the_html %>% html_node("div.mt-2 > button > div") %>% html_attrs()
+    
+    cico  <- the_html %>% html_node("[data-testid='stayDates']") %>% html_text()  %>% 
       str_replace_all("202\\d", "") %>% str_extract_all("\\d+ .{3}") %>% 
       unlist() %>% auto_date()
     
     df <- rbind(df, data.frame(
-      hotel     = the_html %>% html_node("[data-e2e='hotelExpander']") %>% html_text(),
+      hotel     = the_html %>% html_node("[data-testid='hotelExpander']") %>% html_text(),
       check_in  = cico[1],
       check_out = cico[2],
-      room_type = the_html %>% html_nodes("[data-e2e='roomTypeName']") %>% html_text(),
+      room_type = the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text(),
       rate_type = "Best Rate Advertised",
-      rate_avg  = the_html %>% html_nodes("[data-e2e='moreRatesButton']") %>% html_number(),
-      ccy       = the_html %>% html_node("[data-e2e='currencyDropDownSelected']") %>% html_text() %>% str_sub(1,3),
+      rate_avg  = the_html %>% html_nodes("[data-testid='moreRatesButton']") %>% html_number(),
+      ccy       = the_html %>% html_node("[data-testid='currencyDropDownSelected']") %>% html_text() %>% str_sub(1,3),
       ts        = the_html %>% html_node("timestamp") %>% html_text())) 
 
     i <- i + 1

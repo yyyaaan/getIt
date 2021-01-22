@@ -36,13 +36,13 @@ acr_fu_dates  <- (acr_date_max - c(86*controller + 85, 86*controller)) %>% forma
 
 get_exchange_rate()
 
-loggerUS("Worker started HLT01 fu", hlt_fu_dates)
-start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
-save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
-
 loggerUS("Worker started ACR01 fu", acr_fu_dates)
 start_acr01(acr_fu_dates, acr_fu_nights, acr_fu_hotels)
 save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
+
+loggerUS("Worker started HLT01 fu", hlt_fu_dates)
+start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
+save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 
 def_interval <<- 69:129
 loggerUS("Worker started AY01 sp", controller )
