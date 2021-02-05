@@ -109,7 +109,7 @@ save_data_fsh01 <- function(file_pattern_fsh01){
   
   # send HLT key figures
   df_fsh01 %>%
-    mutate(wk = isoweek(check_in), rm = hotel,
+    mutate(wk = isoweek(check_in), rm = paste(hotel, "(pre-tax)"),
            check_in = floor_date(check_in, "week", 1),
            week_start = format(check_in, "%d%b"))  %>%
     group_by(nights, rm, check_in, week_start) %>%

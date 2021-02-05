@@ -1,3 +1,5 @@
+library(rvest)
+library(tidyverse)
 def_interval <<- 3:9
 
 get_from_href <- function(the_id){

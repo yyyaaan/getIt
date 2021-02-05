@@ -34,14 +34,14 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   
   try {
     await page.goto(req_url, wait_opts);
-    await page.waitForSelector('ul.search-results');
     
-    // determing availability - currently skipped
-    var availability = "available";
-    if(availability.toLowerCase().search('sold out') >= 0) {
+    // determing availability
+    var availability = await page.evaluate(() => document.querySelector('div.booking-messages.ng-scope').innerText);
+    if(availability.toLowerCase().search('currently closed') >= 0) {
       out.push("<flag>Sold Out</flag>");
     }
     else {
+      await page.waitForSelector('ul.search-results');
       out.push("<flag>Available</flag>");
 	  	out.push(await page.evaluate(() => document.querySelector('div.search-summary-group').outerHTML));
 	  	out.push(await page.evaluate(() => document.querySelector('div.main-inner').outerHTML));
