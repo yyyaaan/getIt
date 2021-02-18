@@ -55,7 +55,7 @@ get_data_acr01 <- function(cached_txts){
   html_number <- . %>% html_text() %>% str_extract_all("\\d{1,5}(,|.)\\d{1,2}") %>% unlist() %>% str_replace(",", ".") %>% as.numeric() 
   
   for(the_file in cached_txts){
-    
+
     the_html <- read_html(the_file)
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
@@ -79,6 +79,12 @@ get_data_acr01 <- function(cached_txts){
     
     # loop for every room
     for (the_room in the_html %>% html_nodes(".list-complete-item")){
+      if ((the_room %>% html_nodes(".offer__options") %>% html_trim() %>% length()) !=
+          (the_room %>% html_nodes(".offer__price") %>% html_number() %>% length())){
+        cat("skipped due to data issue", the_file, "\n"); next()
+      }
+        
+      
       df <- rbind(df, data.frame(
         hotel     = hotel,
         check_in  = cico[1],

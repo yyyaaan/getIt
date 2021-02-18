@@ -64,7 +64,9 @@ get_data_hlt01 <- function(cached_txts){
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
     if (the_html %>% html_text() %>% str_sub(1, 5) == "error") the_flag = "Sold Out"
-    if(the_html %>% html_nodes("[data-e2e='undefinedText']") %>% html_text() %>% length())
+    if(the_html %>% html_nodes("[data-testid='undefinedText']") %>% html_text() %>% length())
+      the_flag <- "Sold Out"
+    if(the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text() %>% length() == 0)
       the_flag <- "Sold Out"
     
     if(length(the_flag) && the_flag == "Sold Out"){
@@ -73,7 +75,6 @@ get_data_hlt01 <- function(cached_txts){
     }
     
     # data-e2e changed to data-testid on 2021-01-22
-    # the_html %>% html_node("div.mt-2 > button > div") %>% html_attrs()
     
     cico  <- the_html %>% html_node("[data-testid='stayDates']") %>% html_text()  %>% 
       str_replace_all("202\\d", "") %>% str_extract_all("\\d+ .{3}") %>% 

@@ -7,7 +7,7 @@ start_ay01_special <- function(keyword = "Tahiti", controller){
   
   if(tolower(keyword) == "tahiti"){
     
-    date_range <- seq(as.Date("2021-05-31"), as.Date("2022-01-11"), "days")
+    date_range <- seq(as.Date("2021-05-31"), as.Date("2022-02-14"), "days")
     
     param_set <- expand.grid(desta = c("HEL"),
                              destb = c("PPT"),
@@ -20,7 +20,7 @@ start_ay01_special <- function(keyword = "Tahiti", controller){
              weekdays(ddate) %in% c("Tuesday", "Friday", "Sunday"), 
              weekdays(rdate) %in% c("Wednesday", "Saturday"))
     
-    param_set <- param_set[1:178 + controller * 178, ]
+    param_set <- param_set[1:208 + controller * 208, ]
     
     ## build url
     urls <- character()
