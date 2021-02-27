@@ -1,6 +1,8 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
 
+# major update in get_data on 25FEB2021 to accommodate updated QR website
+
 start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL", 
                        loop_dests = "SYD CBR ADL MEL", 
                        loop_dates = "2021-05-10",
@@ -29,19 +31,6 @@ start_qr01 <- function(loop_deps  = "CPH TLL ARN HEL OSL",
   ## retry 1
   file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("qr01_", .)
   start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
-  
-  ## remove possible unavailability. needed due to coronavirus -- speed concern
-  special_skip <- list.files("./cache/", file_pattern, full.names = T) %>% lapply(function(x){
-    pp <- readLines(x, warn = FALSE)
-    ff <- str_detect(pp[length(pp)], "outbound_tripDetails1")
-    if(ff) system(paste("mv", x, "./cache/removed"))
-    return(ifelse(ff, 1, 0))
-  })
-  logger("Skipped", special_skip %>% unlist() %>% sum(), "that are very likely to be sold out")
-  
-  ## retry 2 and 3
-  start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
-  start_retry(wildcard = file_pattern, jssrc = './src/qr01.js')
 }
 
 
@@ -50,51 +39,46 @@ get_data_qr01 <- function(cached_txts){
   ## cached_txts <- list.files("./cache/", "qr01_", full.names = T)
   
   ## shorthand functions
-  html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n|  ", "", .) %>% gsub("\u00A0", " ", .)
-  html_str_rm  <- . %>% gsub("Select (Out|In)bound flightfor", "", .) %>% gsub("Select Flight (1|2)for", "", .) %>% gsub("[ ]+to[ ]+", " ", .) %>% str_trim()
-  auto_date    <- . %>% paste(year(today())) %>% dmy() %>% ifelse(. < today(), . + years(1), .) %>% as_date()
+  html_trimmed <- . %>% html_text %>% gsub("\\\t|\\\n|  | To", "", .) %>% gsub("\u00A0", " ", .)
+  auto_date    <- . %>% paste(year(today())) %>% mdy() %>% ifelse(. < today(), . + years(1), .) %>% as_date()
   
-  out_df <- data.frame(); i <- 0
+  out_df <- data.frame(); i <<- 0; j <<- 0;
   
   ## mutate on whole dataset is separated outside for-loop
   for(the_file in cached_txts){
+    tryCatch({
+      the_html  <- read_html(the_file)
+      the_time  <- the_html %>% html_node("timestamp") %>% html_text()
+      the_cities<- the_html %>% html_nodes(".ms-city") %>% html_trimmed()
+      the_combo <- paste(the_cities[1:2], the_cities[3:4], collapse = "|")
+      if(length(the_cities) < 4)  the_combo <- paste(the_cities[1:2], the_cities[2:1], collapse = "|")
+      the_dates <- the_html %>% html_nodes("a.csBtn") %>% html_attr("onclick") %>% str_split(",", simplify = T)
+      
+      out_df <- rbind(out_df,data.frame(
+        ddate = the_dates[,2] %>% word(2,3) %>% auto_date(),
+        rdate = the_dates[,3] %>% word(2,3) %>% auto_date(),
+        price = the_html %>% html_nodes("a.csBtn") %>% html_text() %>% str_extract("\\d{3,5}\\.\\d{0,2}"),
+        ccy   = the_html %>% html_nodes("a.csBtn") %>% html_text() %>% str_extract("[A-Z]{3}"),
+        route = the_combo,
+        ts    = the_time))
+      
+      i <<- i + 1
+    },
+    error = function(e){
+      j <<- j + 1
+    })
     
-    the_html  <- read_html(the_file)
-    
-    ## get data
-    i <- i+1
-    the_time  <- the_html %>% html_node("timestamp") %>% html_text()
-    the_combo <- the_html %>% html_nodes(".destHeading") %>% html_trimmed() %>% html_str_rm() %>% paste(collapse = "|")
-    two_routes<- the_html %>% html_nodes(".md-details")
-    
-    for(the_route in two_routes){
-      out_df <- rbind(out_df, data.frame(
-        flight= the_route %>% html_nodes(".destHeading") %>% html_trimmed() %>% html_str_rm(),
-        ddate = the_route %>% html_nodes(".cdate") %>% html_trimmed(),
-        price = the_route %>% html_nodes(".taxInMonthCalFnSizeAmount") %>% html_trimmed(),
-        ccy   = the_route %>% html_nodes(".taxInMonthCalFnSizeCurCode") %>% html_trimmed(),
-        inout = the_route %>% html_node(".destHeading") %>% html_trimmed(),
-        ts    = the_time,
-        route = the_combo) %>%
-          filter(str_length(ddate) > 2, str_length(price) > 2))
-    }
-    
-    if(i %% 50 == 0) cat("Processed", i, "files\r")
+    if(i %% 50 == 0) cat("Processed", i, "files", j, " NA\r")
   }
   
-  cat("Completed. Total", i, "files.\r")
+  cat("Completed. Total", i+j, "files (fetched", i, "unavailable", j, ") \n")
   
-
   df <- out_df %>% 
     filter(price != "") %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%
-    mutate(inout  = ifelse(str_detect(inout, "Outbound|Flight 1"), "Outbound", "Inbound"),
-           from   = str_split(flight, " ", simplify = T)[,1],
-           to     = str_split(flight, " ", simplify = T)[,2],
-           ddate  = ddate %>% auto_date(),
-           eur    = as.numeric(price)/rate,
-           tss    = ts %>% ymd_hms() %>% date()) %>%
-    select(route, inout, flight, from, to, ddate, eur, price, ccy, tss, ts)
+    mutate(eur = as.numeric(price)/rate, tss = ts %>% ymd_hms() %>% date(), ver = "V2") %>%
+    select(route, ddate, rdate, eur, ccy, price, ver, ts, tss)
+  
   return(df)
 }
 
@@ -105,19 +89,10 @@ save_data_qr01 <- function(file_pattern_qr01){
   df_qr01 <- list.files("./cache/", file_pattern_qr01, full.names = T) %>% get_data_qr01()
   saveRDS(df_qr01, paste0("./results/", file_pattern_qr01, format(Sys.time(), "_%H%M"), ".rds"))
   archive_files(file_pattern_qr01)
-  util_bq_upload(df_qr01, table_name = "QR01", silent = T)
+  util_bq_upload(df_qr01, table_name = "QR03", silent = T)
   
-  # send line notification
-  df_qr01 %>% 
-    filter(inout == "Outbound") %>%
-    select(route, ddate, eur1 = eur, ts) %>%
-    inner_join(df_qr01 %>%
-                 filter(inout == "Inbound") %>%
-                 select(route, rdate = ddate, eur2 = eur, ts),
-               by = c("route", "ts")) %>%
-    filter((rdate-ddate) %in% (15:29)) %>%
-    mutate(eur = eur1 + eur2,
-           short_days = floor(as.numeric(rdate-ddate) / 3),
+  df_qr01 %>%
+    mutate(short_days = floor(as.numeric(rdate-ddate) / 3),
            the_period = paste0("QR_AUS ", 3*short_days, "-", 3*short_days + 2, "days"),
            label = ifelse(str_detect(route, "Helsinki"), "HEL", "ANY"),
            ddate = floor_date(ddate, "week", 1),
@@ -131,5 +106,3 @@ save_data_qr01 <- function(file_pattern_qr01){
     unite("out", sort(colnames(.)[-1]), sep = " ") %>%
     line_richmsg("QR flights", ., "the_period", "out")
 }
-
-

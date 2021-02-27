@@ -16,6 +16,7 @@
 ## 2020-12-08: MRT tracking is now replaced by follow-up.
 ## 2020-12-13: QR tracking is disabled; partially replaced by follow-up.
 ## 2021-01-16: FSH added tracking
+## 2021-02-14: QR schedule altered due to QR website update
 
 suppressMessages({
   .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
@@ -36,9 +37,9 @@ the_date_max  <- Sys.Date() + 355 - 7
 # param def for follow up -------------------------------------------------
 
 qr_date_max <- Sys.Date() + 353 - qr_the_days - controller # fixed, interval is 15 days
-qr_fu_deps  <- "HEL OSL TLL AMS"
+qr_fu_deps  <- "HEL OSL AMS"
 qr_fu_dests <- "SYD CBR MEL"
-qr_fu_dates <- seq(qr_date_max - 75*controller, length = 5, by = "-15 days") 
+qr_fu_dates <- seq(qr_date_max - 77*controller, length = 11, by = "-7 days") 
 qr_fu_dates <- qr_fu_dates[qr_fu_dates >= as.Date("2021-01-15")] %>% format("%Y-%m-%d") %>% paste(collapse = " ")
 
 mrt_fu_nights <- c(3, 4)
@@ -69,7 +70,6 @@ save_data_fsh01(paste0("fsh01_", gsub("-", "", Sys.Date())))
 logger("Worker started QR01 fu", qr_fu_dates)
 start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
 save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
-suppressMessages(serve_qr01())
 
 
 # all completed -----------------------------------------------------------
