@@ -82,9 +82,11 @@ show_tasktime <- function(log_file = "./scheduled.log", clean_log = TRUE){
 }
 
 
-# bigquery & logger -------------------------------------------------------
+# line --------------------------------------------------------------------
 
 line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
+  
+  text <- Sys.info()['nodename'] %>% str_remove_all("yan|server|01") %>% paste(text)
   
   system2("curl",
           args = c("-s", "-v", "-X",
@@ -140,25 +142,17 @@ line_richmsg <- function(title, df, var_card, var_rows, debug = FALSE,
           stderr = F)
 }
 
+# bigquery & logger -------------------------------------------------------
+
 logger <- function(..., log_name = "getIt"){
   
   text = paste(..., collapse = " ")
   if(grepl("start", tolower(text))) cat("=\n")
   
   cat(get_time_str(), text, ifelse(grepl("completed", tolower(text)),"=========\n", "\n"))
+  line_to_user(text)
   # SEVERITY in DEFAULT, DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
-  line_to_user(text)
-  paste("/snap/bin/gcloud logging write", log_name, "'", text, "' --severity=INFO") %>% system()
-}
-
-loggerUS <- function(..., log_name = "getIt"){
-  
-  text = paste(..., collapse = " ")
-  text = paste("US:", text)
-  if(grepl("start", tolower(text))) cat("=\n")
-  
-  cat(get_time_str(), text, ifelse(grepl("completed", tolower(text)),"=========\n", "\n"))
-  line_to_user(text)
+  # paste("/snap/bin/gcloud logging write", log_name, "'", text, "' --severity=INFO") %>% system()
 }
 
 

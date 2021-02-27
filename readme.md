@@ -20,3 +20,19 @@ Please note that the NodeJS packages are not included; install separately.
 # Routines
 
 The `scheduled.R` are exectued daily, but the whole data is captured completely only once in a 4-day span.
+
+2020-09-30: QR&MRT tracking series replaced from Christmas 2020 to Summer 2021; QR destination removed ADL added AMS
+
+2020-11-30: Added HLT for following up series. No defined series needed.
+
+2020-12-07: HLT moved to US server
+
+2020-12-08: MRT tracking is now replaced by follow-up.
+
+2020-12-13: QR tracking is disabled; partially replaced by follow-up.
+
+2021-01-16: FSH added tracking
+
+2021-02-24: QR schedule altered due to QR website update
+
+2021-02-27: scheduled on different servers merged to single one, no function change
