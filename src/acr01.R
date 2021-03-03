@@ -41,7 +41,6 @@ start_acr01 <- function(range_dates = "2021-02-01 2021-02-15", #"2021-05-01 2021
   file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("acr01_", .)
   start_retry(wildcard = file_pattern, jssrc = './src/acr01.js')
   start_retry(wildcard = file_pattern, jssrc = './src/acr01.js')
-  start_retry(wildcard = file_pattern, jssrc = './src/acr01.js')
 }
 
 

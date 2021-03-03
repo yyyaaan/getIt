@@ -39,9 +39,7 @@ start_hlt01 <- function(range_dates = "2021-04-05 2021-04-11",
   file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("hlt01_", .)
   start_retry(wildcard = file_pattern, jssrc = './src/hlt01.js')
   start_retry(wildcard = file_pattern, jssrc = './src/hlt01.js')
-  start_retry(wildcard = file_pattern, jssrc = './src/hlt01.js')
 }
-
 
 
 

@@ -51,7 +51,6 @@ start_mrt01 <- function(range_dates = "2020-12-15 2021-01-15", #"2021-05-01 2021
   file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("mrt01_", .)
   start_retry(wildcard = file_pattern, jssrc = './src/mrt01.js')
   start_retry(wildcard = file_pattern, jssrc = './src/mrt01.js')
-  start_retry(wildcard = file_pattern, jssrc = './src/mrt01.js')
 }
 
 

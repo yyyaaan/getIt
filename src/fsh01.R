@@ -38,7 +38,6 @@ start_fsh01 <- function(range_dates = "2021-11-21 2021-12-01",
   file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("fsh01_", .)
   start_retry(wildcard = file_pattern, jssrc = './src/fsh01.js')
   start_retry(wildcard = file_pattern, jssrc = './src/fsh01.js')
-  start_retry(wildcard = file_pattern, jssrc = './src/fsh01.js')
 }
 
 

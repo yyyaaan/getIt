@@ -11,7 +11,7 @@ suppressMessages(source("./src/utilities.R"))
 this_server <- Sys.info()['nodename']
 job_acr <- "us"
 job_ay  <- "us"
-job_fsh <- "fi"
+job_fsh <- "csc"
 job_hlt <- "us"
 job_mrt <- "fi"
 job_qr  <- "csc"
@@ -61,7 +61,9 @@ if(grepl(job_mrt, this_server)){
   logger("START MRT01", mrt_fu_dates)
   start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
   save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
-  suppressMessages(serve_mrt01())
+  suppressMessages({
+    source("./src/serving.R")
+    serve_mrt01()})
 }
 
 
