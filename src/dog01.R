@@ -1,5 +1,6 @@
 library(rvest)
 library(tidyverse)
+source("./src/utilities.R")
 
 all_breeds <- read_html("https://www.hankikoira.fi/koirarodut") %>% html_nodes("span.breed")
 all_puppies <- data.frame()
@@ -15,13 +16,23 @@ for(the_breed in all_breeds){
     the_tbls <- the_page %>% html_table()
     for(the_tbl in the_tbls){
       the_tbl$nimi <- the_name
+      cat(the_name, "\n")
       all_puppies <- rbind(all_puppies, the_tbl[the_tbl$Kennel != "Yhteensä:",])
     }
   } 
 }
 
+final_df <- all_puppies %>% 
+  rename(Kasvattajat = `Kasvattaja(t)`) %>%
+  add_column(tss =Sys.Date()) 
+
+# today's dogs, it INCLUDES duplicate from previous days
+saveRDS(final_df, file = paste0("./results/dog01_", Sys.time() %>% format("%Y%m%d_%H%M"), ".rds"))
+util_bq_upload(final_df, "DOG01", silent = TRUE)
+
+
 all_puppies %>% 
-  add_column(tss = Sys.Date()) %>%
   rbind(readRDS("./results/puppies.rds")) %>%
   distinct_all() %>%
   saveRDS("./results/puppies.rds")
+

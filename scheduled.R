@@ -11,10 +11,12 @@ suppressMessages(source("./src/utilities.R"))
 this_server <- Sys.info()['nodename']
 job_acr <- "us"
 job_ay  <- "us"
+job_dog <- "fi"
 job_fsh <- "csc"
 job_hlt <- "us"
 job_mrt <- "fi"
 job_qr  <- "csc"
+
 
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
@@ -104,8 +106,13 @@ if(grepl(job_ay, this_server)){
   save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 }
 
+if(grepl(job_dog, this_server)){
+  # special & fast code
+  logger("START Hankikoira", controller )
+  source("./src/dog01.R")
+}
 
 # all completed -----------------------------------------------------------
 
 show_tasktime()
-cat(rep("=", 39), "\n", rep("=", 39), "\n")
+cat(rep("=", 39), "\n")

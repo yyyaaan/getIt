@@ -1,6 +1,6 @@
 This project replace the `get` project using [puppeteer](!https://github.com/puppeteer/puppeteer/tree/v3.1.0) instead of [chromeless](!https://github.com/prisma-archive/chromeless)
 
-Please note that the NodeJS packages are not included; install separately.
+Please note that the NodeJS packages are not included with possibly out-dated `package-lock.json`; install depedencies separately.
 
 # Folder Structure
 
@@ -25,14 +25,16 @@ The `scheduled.R` are exectued daily, but the whole data is captured completely 
 
 2020-11-30: Added HLT for following up series. No defined series needed.
 
-2020-12-07: HLT moved to US server
+2020-12-07: HLT moved to US server.
 
 2020-12-08: MRT tracking is now replaced by follow-up.
 
 2020-12-13: QR tracking is disabled; partially replaced by follow-up.
 
-2021-01-16: FSH added tracking
+2021-01-16: FSH added tracking.
 
-2021-02-24: QR schedule altered due to QR website update
+2021-02-24: QR schedule altered due to QR website update, *output structure is affected and updated*.
 
-2021-02-27: scheduled on different servers merged to single one, no function change
+2021-02-27: scheduled on different servers merged to single one, no function change.
+
+2021-03-04: platform updated to latest (Ubuntu 20.04, Puppeteer 3.3.0)
