@@ -57,7 +57,7 @@ get_data_qr01 <- function(cached_txts){
       out_df <- rbind(out_df,data.frame(
         ddate = the_dates[,2] %>% word(2,3) %>% auto_date(),
         rdate = the_dates[,3] %>% word(2,3) %>% auto_date(),
-        price = the_html %>% html_nodes("a.csBtn") %>% html_text() %>% str_extract("\\d{3,5}\\.\\d{0,2}"),
+        price = the_html %>% html_nodes("a.csBtn") %>% html_text() %>% str_extract("\\d{3,6}\\.\\d{0,2}"),
         ccy   = the_html %>% html_nodes("a.csBtn") %>% html_text() %>% str_extract("[A-Z]{3}"),
         route = the_combo,
         ts    = the_time))
