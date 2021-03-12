@@ -16,7 +16,7 @@ job_fsh <- "csc"
 job_hlt <- "us"
 job_mrt <- "fi"
 job_qr  <- "csc"
-
+job_mgr <- "fi"
 
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
@@ -111,6 +111,12 @@ if(grepl(job_dog, this_server)){
   logger("START Hankikoira", controller )
   source("./src/dog01.R")
 }
+
+if(grepl(job_mgr, this_server)){
+  # simple node call and send
+  system("node ./src/migri.js", intern = TRUE) %>% line_to_user()
+}
+
 
 # all completed -----------------------------------------------------------
 

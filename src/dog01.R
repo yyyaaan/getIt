@@ -16,11 +16,12 @@ for(the_breed in all_breeds){
     the_tbls <- the_page %>% html_table()
     for(the_tbl in the_tbls){
       the_tbl$nimi <- the_name
-      cat(the_name, "\n")
       all_puppies <- rbind(all_puppies, the_tbl[the_tbl$Kennel != "Yhteensä:",])
     }
   } 
 }
+
+cat(nrow(all_puppies), "Puppies\n")
 
 final_df <- all_puppies %>% 
   rename(Kasvattajat = `Kasvattaja(t)`) %>%
