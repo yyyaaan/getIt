@@ -1,13 +1,15 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
 
-### ?pending error handling when requested route not available
-
-start_ay01_special <- function(keyword = "Tahiti", controller){
+start_ay01_special <- function(keyword = "Tahiti", controller, batch_n){
+  
+  # for AY only, using larger interval
+  prev_interval <- def_interval
+  def_interval <<- 60:120
   
   if(tolower(keyword) == "tahiti"){
     
-    date_range <- seq(as.Date("2021-05-31"), as.Date("2022-02-14"), "days")
+    date_range <- seq(as.Date("2021-05-31"), as.Date("2022-03-14"), "days")
     
     param_set <- expand.grid(desta = c("HEL"),
                              destb = c("PPT"),
@@ -20,7 +22,12 @@ start_ay01_special <- function(keyword = "Tahiti", controller){
              weekdays(ddate) %in% c("Tuesday", "Friday", "Sunday"), 
              weekdays(rdate) %in% c("Wednesday", "Saturday"))
     
-    param_set <- param_set[1:208 + controller * 208, ]
+    ## slice to 4-day
+    size_day <- nrow(param_set)/4
+    param_set <- param_set[1:size_day + controller * size_day, ]
+    
+    ## further slice to 3-batch
+    param_set <- param_set %>% filter((row_number() %% 3 == batch_n))
     
     ## build url
     urls <- character()
@@ -35,7 +42,11 @@ start_ay01_special <- function(keyword = "Tahiti", controller){
     start_batch(urls, jssrc = './src/ay01.js', file_init = 'ay01')
     file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("ay01_", .)
     start_retry(wildcard = file_pattern, jssrc = './src/ay01.js')
-    return("AY Tahiti completed")
+    
+    ## restore interval for other tasks
+    def_interval <<- prev_interval
+    
+    return(paste("AY Tahiti completed for batch", batch_n))
   }
   
   return("No item found.")
@@ -106,10 +117,10 @@ get_data_ay01 <- function(cached_txts){
     the_combo <- the_html %>% html_nodes("div.flight-header__info > div > h2") %>% 
       html_text() %>% gsub("\\nto|Inbound|Outbound", "", .) %>% gsub("\\n", "", .) %>%
       paste(collapse = "|")
-  
+    
     cells <- the_html %>% html_nodes("div.flight-cell.available") %>% html_attrs() %>% as.data.frame() %>% t() %>% as.data.frame()
     rownames(cells) <- 1:nrow(cells)
-  
+    
     out_df <- rbind(out_df, data.frame(
       route = the_combo,
       inout = cells$`data-bound-index`, 
@@ -137,7 +148,7 @@ get_data_ay01 <- function(cached_txts){
            time2  = as.numeric(time2), 
            timedur= (time2- time1) / 6e4,
            flight = paste(from, (time1/1000) %>% as_datetime() %>% format("%H:%M"), 
-                           "-", (time2/1000) %>% as_datetime() %>% format("%H:%M"), 
+                          "-", (time2/1000) %>% as_datetime() %>% format("%H:%M"), 
                           to, paste0(timedur %/% 60, "h", timedur %% 60, "min")),
            ddate  = ddate %>% ymd_hm() %>% as_date(),
            price  = as.numeric(price),
@@ -186,7 +197,7 @@ save_data_ay01 <- function(file_pattern_ay01){
   archive_files(file_pattern_ay01)
   df_ay01_simple <- df_ay01 %>% get_simple_ay01()
   
-    ### detailed AY in AY02, daily lowest in AY01
+  ### detailed AY in AY02, daily lowest in AY01
   util_bq_upload(df_ay01, table_name = "AY02", silent = T)
   util_bq_upload(df_ay01_simple, table_name = "AY01", silent = T)
   
@@ -210,7 +221,7 @@ save_data_ay01 <- function(file_pattern_ay01){
     pivot_wider(id_cols = c('the_period', 'wk'), names_from = label, values_from = best_rates) %>%
     unite("out", sort(colnames(.)[-1]), sep = " ")  %>%
     line_richmsg("AY flights", ., "the_period", "out", debug = F)
-
+  
 }
 
 

@@ -11,12 +11,12 @@ suppressMessages(source("./src/utilities.R"))
 this_server <- Sys.info()['nodename']
 job_acr <- "us"
 job_ay  <- "us"
-job_dog <- "fi"
-job_fsh <- "csc"
 job_hlt <- "us"
+job_dog <- "fi"
 job_mrt <- "fi"
-job_qr  <- "csc"
 job_mgr <- "fi"
+job_qr  <- "csc"
+job_fsh <- "csc"
 
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
@@ -58,6 +58,13 @@ acr_fu_dates  <- (the_date_max - c(86*controller + 85, 86*controller)) %>% forma
 ### exchange rate should be fetched everywhere
 get_exchange_rate()
 
+if(grepl(job_ay, this_server)){
+  suppressMessages(source("./src/ay01.R"))
+  logger("START AY01 sp", controller, 0)
+  start_ay01_special("Tahiti", controller, 0)
+}
+
+
 if(grepl(job_mrt, this_server)){
   suppressMessages(source("./src/mrt01.R"))
   logger("START MRT01", mrt_fu_dates)
@@ -91,19 +98,17 @@ if(grepl(job_acr, this_server)){
   save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
 }
 
+if(grepl(job_ay, this_server)){
+  logger("START AY01 sp", controller, 1)
+  start_ay01_special("Tahiti", controller, 1)
+}
+
+
 if(grepl(job_hlt, this_server)){
   suppressMessages(source("./src/hlt01.R"))
   logger("START HLT01", hlt_fu_dates)
   start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
   save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
-}
-
-if(grepl(job_ay, this_server)){
-  suppressMessages(source("./src/ay01.R"))
-  def_interval <<- 69:129
-  logger("START AY01 sp", controller )
-  start_ay01_special("Tahiti", controller)
-  save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 }
 
 if(grepl(job_dog, this_server)){
@@ -115,6 +120,12 @@ if(grepl(job_dog, this_server)){
 if(grepl(job_mgr, this_server)){
   # simple node call and send
   system("node ./src/migri.js", intern = TRUE) %>% line_to_user()
+}
+
+if(grepl(job_ay, this_server)){
+  logger("START AY01 sp", controller, 2)
+  start_ay01_special("Tahiti", controller, 2)
+  save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 }
 
 

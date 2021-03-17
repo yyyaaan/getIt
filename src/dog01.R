@@ -14,9 +14,13 @@ for(the_breed in all_breeds){
     the_page <- read_html(paste0("https://www.hankikoira.fi", the_link))
     the_name <- the_page %>% html_nodes("#block-hk-puppies-breeds-available-puppies > div > h3") %>% html_text()
     the_tbls <- the_page %>% html_table()
-    for(the_tbl in the_tbls){
-      the_tbl$nimi <- the_name
-      all_puppies <- rbind(all_puppies, the_tbl[the_tbl$Kennel != "Yhteensä:",])
+    
+    if(length(the_name) == length(the_tbls)){
+      for(i in 1:length(the_tbls)){
+        the_tbl <- the_tbls[[i]]
+        the_tbl$nimi <- the_name[i]
+        all_puppies <- rbind(all_puppies, the_tbl[the_tbl$Kennel != "Yhteensä:",])
+      }
     }
   } 
 }
