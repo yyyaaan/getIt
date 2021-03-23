@@ -1,11 +1,7 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
 
-start_ay01_special <- function(keyword = "Tahiti", controller, batch_n){
-  
-  # for AY only, using larger interval
-  prev_interval <- def_interval
-  def_interval <<- 60:120
+start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999){
   
   if(tolower(keyword) == "tahiti"){
     
@@ -27,7 +23,7 @@ start_ay01_special <- function(keyword = "Tahiti", controller, batch_n){
     param_set <- param_set[1:size_day + controller * size_day, ]
     
     ## further slice to 3-batch
-    param_set <- param_set %>% filter((row_number() %% 3 == batch_n))
+    if(batch_n != 999) param_set <- param_set %>% filter((row_number() %% 3 == batch_n))
     
     ## build url
     urls <- character()
@@ -39,12 +35,9 @@ start_ay01_special <- function(keyword = "Tahiti", controller, batch_n){
     }
     
     ## call batch, here only 1 retry is performed
-    start_batch(urls, jssrc = './src/ay01.js', file_init = 'ay01')
+    start_batch(urls, jssrc = './src/ay01.js', file_init = 'ay01', long_pause = (batch_n == 999))
     file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("ay01_", .)
     start_retry(wildcard = file_pattern, jssrc = './src/ay01.js')
-    
-    ## restore interval for other tasks
-    def_interval <<- prev_interval
     
     return(paste("AY Tahiti completed for batch", batch_n))
   }

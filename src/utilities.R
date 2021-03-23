@@ -10,6 +10,7 @@ library(googleAuthR)
 def_break  <- 199:299
 def_n_jobs <- 6
 def_interval <- 20:40
+def_int_long <- 3999:6999
 
 
 get_time_str <- function(){
@@ -55,7 +56,7 @@ util_runjs  <- function(params, jssrc, wait = FALSE){
 }
 
 
-start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE){
+start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE, long_pause = FALSE){
   ## outname is decided upon jssrc
   ## shuffled running order
   
@@ -80,6 +81,12 @@ start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE){
     
     ### waiting and tracing
     Sys.sleep(sample(def_interval, 1))
+    ### extra long breaking if needed
+    if(long_pause && (job_submitted %% 20 == 0)){
+      the_pause <- sample(def_int_long, 1)
+      cat(get_time_str(), "Nodes submission PAUSED for", the_pause, "seconds")
+      Sys.sleep(the_pause)
+    }
     
     if(job_submitted %% 10 == 0){
       job_completed <- list.files("./cache/", the_ptn) %>% length()
@@ -89,13 +96,9 @@ start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE){
           ifelse(verbose, paste("Completed", job_completed), "-"),
           "Remaining", length(urls) - job_submitted, "\n")
       
-      ### wait more if too many in progress
-      # if(job_submitted - job_completed > 6) {
-      #   cat(get_time_str(), "Pausing - wait for job to be completed")
-      #   Sys.sleep(sample(2*def_interval, 1))
-      # }
       system("rm ./cache/tmp_runjs_*")      
     }
+    
   }
   
   Sys.sleep(sample(def_interval, 1))

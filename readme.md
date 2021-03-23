@@ -25,7 +25,7 @@ Please note that the NodeJS packages are not included with possibly out-dated `p
 
 # Routines
 
-The `scheduled.R` are exectued daily, but the whole data is captured completely only once in a 4-day span.
+The `scheduled.R` are executed daily, but the whole data is captured completely only once in a 4-day span. `subscheduled.R` will be fired by `scheduled.R` conditionally.
 
 - 2020-09-30: QR&MRT tracking series replaced from Christmas 2020 to Summer 2021; QR destination removed ADL added AMS
 - 2020-11-30: Added HLT for following up series. No defined series needed.
@@ -36,3 +36,4 @@ The `scheduled.R` are exectued daily, but the whole data is captured completely 
 - 2021-02-24: QR schedule altered due to QR website update, *output structure is affected and updated*.
 - 2021-02-27: scheduled on different servers merged to single one, no function change.
 - 2021-03-04: platform updated to latest (Ubuntu 20.04, Puppeteer 3.3.0)
+- 2021-03-23: major change in AY running mode. *AY will be now run in a separated session*.

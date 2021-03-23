@@ -1,4 +1,4 @@
-# system("/usr/lib/R/bin/Rscript '/home/yanpan/getIt/scheduled.R'  >> '/home/yanpan/getIt/scheduled.log' 2>&1", wait = FALSE)
+# system("Rscript '/home/yanpan/getIt/scheduled.R'  >> '/home/yanpan/getIt/scheduled.log' 2>&1", wait = FALSE)
 
 .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
 setwd("/home/yanpan/getIt")
@@ -10,11 +10,12 @@ suppressMessages(source("./src/utilities.R"))
 ### by server (currently 3 servers)
 this_server <- Sys.info()['nodename']
 job_acr <- "us"
-job_ay  <- "us"
 job_hlt <- "us"
 job_dog <- "fi"
 job_mrt <- "fi"
 job_mgr <- "fi"
+job_ovi <- "fi"
+job_ay  <- "csc"
 job_qr  <- "csc"
 job_fsh <- "csc"
 
@@ -59,11 +60,9 @@ acr_fu_dates  <- (the_date_max - c(86*controller + 85, 86*controller)) %>% forma
 get_exchange_rate()
 
 if(grepl(job_ay, this_server)){
-  suppressMessages(source("./src/ay01.R"))
-  logger("START AY01 sp", controller, 0)
-  start_ay01_special("Tahiti", controller, 0)
+  logger("START AY01 in separate process")
+  system("Rscript '/home/yanpan/getIt/src/subscheduled.R'  >> '/home/yanpan/getIt/scheduled2.log' 2>&1", wait = FALSE)  
 }
-
 
 if(grepl(job_mrt, this_server)){
   suppressMessages(source("./src/mrt01.R"))
@@ -98,12 +97,6 @@ if(grepl(job_acr, this_server)){
   save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
 }
 
-if(grepl(job_ay, this_server)){
-  logger("START AY01 sp", controller, 1)
-  start_ay01_special("Tahiti", controller, 1)
-}
-
-
 if(grepl(job_hlt, this_server)){
   suppressMessages(source("./src/hlt01.R"))
   logger("START HLT01", hlt_fu_dates)
@@ -111,22 +104,14 @@ if(grepl(job_hlt, this_server)){
   save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 }
 
-if(grepl(job_dog, this_server)){
-  # special & fast code
-  logger("START Hankikoira", controller )
-  source("./src/dog01.R")
-}
 
-if(grepl(job_mgr, this_server)){
-  # simple node call and send
-  system("node ./src/migri.js", intern = TRUE) %>% line_to_user()
-}
 
-if(grepl(job_ay, this_server)){
-  logger("START AY01 sp", controller, 2)
-  start_ay01_special("Tahiti", controller, 2)
-  save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
-}
+# small pieces ------------------------------------------------------------
+
+if(grepl(job_dog, this_server)) source("./src/dog01.R")
+if(grepl(job_ovi, this_server)) source("./src/ovi01.R")
+if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
+
 
 
 # all completed -----------------------------------------------------------
