@@ -58,7 +58,7 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
         });
         
         all_data = all_data.concat(this_data);
-        console.log("Completed "+ i);
+        //console.log("Completed "+ i);
         await page.click('button#paginationNext');
     }
         

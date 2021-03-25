@@ -2,12 +2,12 @@
 
 .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
 setwd("/home/yanpan/getIt")
-suppressMessages(source("./src/utilities.R"))
+suppressMessages({source("./src/utilities.R"); source("./src/ay01.R")})
 
 
 # job distribution --------------------------------------------------------
 
-### by server (currently 3 servers)
+### by server (currently 3 servers), AY is separated
 this_server <- Sys.info()['nodename']
 job_acr <- "us"
 job_hlt <- "us"
@@ -15,7 +15,6 @@ job_dog <- "fi"
 job_mrt <- "fi"
 job_mgr <- "fi"
 job_ovi <- "fi"
-job_ay  <- "csc"
 job_qr  <- "csc"
 job_fsh <- "csc"
 
@@ -54,28 +53,40 @@ acr_fu_dates  <- (the_date_max - c(86*controller + 85, 86*controller)) %>% forma
 
 
 
+# recursive job def -------------------------------------------------------
+
+### will run before every other task
+before_each_task <- function(the_id){
+  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8)
+}
+
+after_all_tasks <- function(){
+  the_id <- 7
+  if(grepl("fi", this_server)) the_id <- 5
+  if(grepl("us", this_server)) the_id <- 6
+  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8)
+  save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
+}
+
+
 # main jobs ---------------------------------------------------------------
 
 ### exchange rate should be fetched everywhere
 get_exchange_rate()
 
-if(grepl(job_ay, this_server)){
-  logger("START AY01 in separate process")
-  system("Rscript '/home/yanpan/getIt/src/subscheduled.R'  >> '/home/yanpan/getIt/scheduled2.log' 2>&1", wait = FALSE)  
-}
 
 if(grepl(job_mrt, this_server)){
+  before_each_task(0)
   suppressMessages(source("./src/mrt01.R"))
   logger("START MRT01", mrt_fu_dates)
   start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
   save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
-  suppressMessages({
-    source("./src/serving.R")
-    serve_mrt01()})
+  suppressMessages({source("./src/serving.R"); serve_mrt01()})
 }
 
 
 if(grepl(job_fsh, this_server)){
+  before_each_task(1)
   suppressMessages(source("./src/fsh01.R"))
   logger("START FSH01", fsh_fu_dates)
   start_fsh01(fsh_fu_dates, fsh_fu_nights, fsh_fu_hotels)
@@ -84,6 +95,7 @@ if(grepl(job_fsh, this_server)){
 
 
 if(grepl(job_qr, this_server)){
+  before_each_task(2)
   suppressMessages(source("./src/qr01.R"))
   logger("START QR01", qr_fu_dates)
   start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
@@ -91,6 +103,7 @@ if(grepl(job_qr, this_server)){
 }
 
 if(grepl(job_acr, this_server)){
+  before_each_task(3)
   suppressMessages(source("./src/acr01.R"))
   logger("START ACR01", acr_fu_dates)
   start_acr01(acr_fu_dates, acr_fu_nights, acr_fu_hotels)
@@ -98,15 +111,17 @@ if(grepl(job_acr, this_server)){
 }
 
 if(grepl(job_hlt, this_server)){
+  before_each_task(4)
   suppressMessages(source("./src/hlt01.R"))
   logger("START HLT01", hlt_fu_dates)
   start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
   save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 }
 
+after_all_tasks()
 
 
-# small pieces ------------------------------------------------------------
+# small pieces and finalizing recursive task ------------------------------
 
 if(grepl(job_dog, this_server)) source("./src/dog01.R")
 if(grepl(job_ovi, this_server)) source("./src/ovi01.R")

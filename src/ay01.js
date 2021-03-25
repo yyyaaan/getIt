@@ -36,16 +36,12 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
     await page.waitForSelector('div.content-wrapper.select-flights-wrapper');
     out.push(await page.evaluate(() => document.querySelector('#main-content').innerHTML));
 
-    
     // saving
-    await page.screenshot({path: './cache/a_ay01.png'});
+    // await page.screenshot({path: './cache/a_ay01.png'});
 		out.push('<exetime>' + (new Date() - exe_start)/1000 + '</exetime>\n');
-
     filesave.writeFile('./cache/' + req_name + '.pp', out.join(), function(err) {}); 
   } catch (e) {	
     out[0] = 'error';
-        await page.screenshot({path: './cache/a_ay01.png'});
-
     out.push(e);
     filesave.writeFile('./cache/' + req_name + '.pp', out.join(), function(err) {}); 
   }

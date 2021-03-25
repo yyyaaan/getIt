@@ -1,7 +1,7 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
 
-start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999){
+start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999, max_batch=8){
   
   if(tolower(keyword) == "tahiti"){
     
@@ -23,7 +23,7 @@ start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999){
     param_set <- param_set[1:size_day + controller * size_day, ]
     
     ## further slice to 3-batch
-    if(batch_n != 999) param_set <- param_set %>% filter((row_number() %% 3 == batch_n))
+    if(batch_n != 999) param_set <- param_set %>% filter((row_number() %% max_batch == batch_n))
     
     ## build url
     urls <- character()
