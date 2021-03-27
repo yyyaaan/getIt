@@ -21,6 +21,7 @@ job_fsh <- "csc"
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
 def_interval <<- 20:35
+def_int_long <<- 1200:3000
 
 
 

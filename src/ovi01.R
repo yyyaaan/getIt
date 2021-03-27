@@ -44,7 +44,7 @@ for(the_id in all_ids){
   if(nrow(this_df))out_df <- rbind(out_df, this_df)
   i <- i + 1
   
-  cat("Completed", i, "/", length(all_ids), "\r" )
+  #cat("Completed", i, "/", length(all_ids), "\r" )
   Sys.sleep(sample(def_interval))
 }
 
@@ -52,5 +52,5 @@ out_df$tss <- format(Sys.Date(), "%Y-%m-%d")
 
 saveRDS(out_df, file = paste0("./results/etuovi_", Sys.time() %>% format("%Y%m%d_%H%M"), ".rds"))
 saveRDS(rbind(old_df, out_df), file = "./results/etuovi.rds")
-
+cat("Fetched", length(all_ids), "\n" )
 

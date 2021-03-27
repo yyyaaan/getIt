@@ -35,7 +35,7 @@ start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999, max_
     }
     
     ## call batch, here only 1 retry is performed
-    start_batch(urls, jssrc = './src/ay01.js', file_init = 'ay01', long_pause = (batch_n == 999))
+    start_batch(urls, jssrc = './src/ay01.js', file_init = 'ay01', long_pause = TRUE)
     file_pattern = Sys.Date() %>% gsub("-", "", .) %>% paste0("ay01_", .)
     start_retry(wildcard = file_pattern, jssrc = './src/ay01.js')
     
