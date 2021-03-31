@@ -2,7 +2,7 @@
 source("./src/utilities.R")
 
 url_hlt_dest <<- c(
-  "PPTMLHI", # Moorea
+  "PPTMLHH", # Moorea (code changed in MAR2021? was PPTMLHI)
   "PPTBNCI"  # Bora Bora Conrad
 )
 
@@ -92,7 +92,8 @@ get_data_hlt01 <- function(cached_txts){
     if(i %% 50 == 0) cat("Processed", i, "files ( Sold out", j, ")\r")
   }
   
-  cat("Completed. Total", i+j, "files (fetched", i, "unavailable", j, ") \n")
+  cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j,  "\n")
+  
   
   df_final <- df %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%

@@ -131,7 +131,7 @@ get_data_ay01 <- function(cached_txts){
     if(i %% 50 == 0) cat("Processed", i, "files ( NA", j, ")\r")
   }
   
-  cat("Completed. Total", i+j, "files (fetched", i, "unavailable", j, ") \n")
+  cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j,  "\n")
   
   
   df <- out_df %>% 
@@ -193,8 +193,18 @@ save_data_ay01 <- function(file_pattern_ay01){
   ### detailed AY in AY02, daily lowest in AY01
   util_bq_upload(df_ay01, table_name = "AY02", silent = T)
   util_bq_upload(df_ay01_simple, table_name = "AY01", silent = T)
+}
+
+
+message_fromBQ_ay01 <- function(req_tss = (Sys.Date() - 1)){
   
-  # send line notification
+  bq_deauth()
+  bq_auth(path = "/home/yanpan/.gcp.json")
+  
+  df_ay01_simple <- bq_dataset(project = "yyyaaannn", dataset = "Explore") %>%
+    bq_dataset_query(paste0("select * from AY01 where tss='", req_tss, "';")) %>%
+    bq_table_download() 
+
   df_ay01_simple %>% 
     filter(inout == "Outbound") %>%
     select(route, ddate, eur1 = eur, ts) %>%
@@ -202,6 +212,7 @@ save_data_ay01 <- function(file_pattern_ay01){
                  filter(inout == "Inbound") %>%
                  select(route, rdate = ddate, eur2 = eur, ts),
                by = c("route", "ts")) %>%
+    filter(rdate - ddate > 8, rdate - ddate < 20) %>%
     mutate(eur = eur1 + eur2,
            the_period = paste0("AY_PPT ", rdate-ddate, "days"),
            label = ifelse(str_detect(route, "Helsinki.*Helsinki"), "HEL", "ANY"),
@@ -214,7 +225,4 @@ save_data_ay01 <- function(file_pattern_ay01){
     pivot_wider(id_cols = c('the_period', 'wk'), names_from = label, values_from = best_rates) %>%
     unite("out", sort(colnames(.)[-1]), sep = " ")  %>%
     line_richmsg("AY flights", ., "the_period", "out", debug = F)
-  
 }
-
-

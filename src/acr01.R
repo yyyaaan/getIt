@@ -100,8 +100,8 @@ get_data_acr01 <- function(cached_txts){
     if(i %% 50 == 0) cat("Processed", i, "files ( Sold out", j, ")\r")
   }
   
+  cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j,  "\n")
   
-  cat("Completed. Total", i+j, "files (fetched", i, "unavailable", j, ") \n")
   
   df_final <- df %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%

@@ -71,7 +71,7 @@ get_data_qr01 <- function(cached_txts){
     if(i %% 50 == 0) cat("Processed", i, "files", j, " NA\r")
   }
   
-  cat("Completed. Total", i+j, "files (fetched", i, "unavailable", j, ") \n")
+  cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j,  "\n")
   
   df <- out_df %>% 
     filter(price != "") %>% 

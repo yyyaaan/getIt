@@ -52,5 +52,5 @@ out_df$tss <- format(Sys.Date(), "%Y-%m-%d")
 
 saveRDS(out_df, file = paste0("./results/etuovi_", Sys.time() %>% format("%Y%m%d_%H%M"), ".rds"))
 saveRDS(rbind(old_df, out_df), file = "./results/etuovi.rds")
-cat("Fetched", length(all_ids), "\n" )
+cat("Fetched", length(all_ids), "new estates\n" )
 

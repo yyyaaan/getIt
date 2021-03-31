@@ -84,7 +84,7 @@ start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE, long_
     ### extra long breaking if needed
     if(long_pause && (job_submitted %% 10 == 0)){
       the_pause <- sample(def_int_long, 1)
-      cat(get_time_str(), "Nodes submission PAUSED for", the_pause, "seconds")
+      cat(get_time_str(), "Nodes submission PAUSED for", the_pause, "seconds\n")
       Sys.sleep(the_pause)
     }
     
@@ -92,9 +92,9 @@ start_batch <- function(urls, jssrc, file_init = "noname", verbose = TRUE, long_
       job_completed <- list.files("./cache/", the_ptn) %>% length()
       
       cat(get_time_str(), 
-          "Nodes submitted", job_submitted, 
-          ifelse(verbose, paste("Completed", job_completed), "-"),
-          "Remaining", length(urls) - job_submitted, "\n")
+          "Nodes S", job_submitted, 
+          ifelse(verbose, paste("C", job_completed), "-"),
+          "R", length(urls) - job_submitted, "\n")
       
       system("rm ./cache/tmp_runjs_*")      
     }
@@ -113,7 +113,7 @@ start_retry <- function(wildcard, jssrc){
   
   failed_urls <- list.files("./cache/", wildcard, full.names = T) %>% detect_failed()
   if(length(failed_urls) == 0) {cat("all ok! nothing to retry :-) \n"); return()}
-  cat(get_time_str(), "Retry failed jobs. Total to retry", length(failed_urls), "\n")
+  cat(get_time_str(), "Retry failed jobs-Total", length(failed_urls), "\n")
   
   file_initial  <- strsplit(wildcard, "_")[[1]][1]
   start_batch(failed_urls, jssrc, file_initial, FALSE)
@@ -143,13 +143,13 @@ util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore",
 # Messaging & Logging -----------------------------------------------------
 
 
-logger <- function(..., log_name = "getIt"){
+logger <- function(..., log_name = "getIt", send_line = TRUE){
   
   text = paste(..., collapse = " ")
   if(grepl("start", tolower(text))) cat("=\n")
   
   cat(get_time_str(), text, ifelse(grepl("completed", tolower(text)),"=========\n", "\n"))
-  line_to_user(text)
+  if(send_line) line_to_user(text)
   # SEVERITY in DEFAULT, DEBUG, INFO, NOTICE, WARNING, ERROR, CRITICAL, ALERT, EMERGENCY.
   # paste("/snap/bin/gcloud logging write", log_name, "'", text, "' --severity=INFO") %>% system()
 }

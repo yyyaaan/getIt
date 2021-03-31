@@ -58,6 +58,7 @@ acr_fu_dates  <- (the_date_max - c(86*controller + 85, 86*controller)) %>% forma
 
 ### will run before every other task
 before_each_task <- function(the_id){
+  logger("START AY batch", the_id, "of 8", send_line = FALSE)
   start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8)
 }
 
@@ -74,12 +75,13 @@ after_all_tasks <- function(){
 
 ### exchange rate should be fetched everywhere
 get_exchange_rate()
-
+### push yesterday's AY results
+if(grepl("fi", this_server)) message_fromBQ_ay01()
 
 if(grepl(job_mrt, this_server)){
   before_each_task(0)
   suppressMessages(source("./src/mrt01.R"))
-  logger("START MRT01", mrt_fu_dates)
+  logger("START MRT01", mrt_fu_dates, send_line = FALSE)
   start_mrt01(mrt_fu_dates, mrt_fu_nights, mrt_fu_hotels)
   save_data_mrt01(paste0("mrt01_", gsub("-", "", Sys.Date())))
   suppressMessages({source("./src/serving.R"); serve_mrt01()})
@@ -89,7 +91,7 @@ if(grepl(job_mrt, this_server)){
 if(grepl(job_fsh, this_server)){
   before_each_task(1)
   suppressMessages(source("./src/fsh01.R"))
-  logger("START FSH01", fsh_fu_dates)
+  logger("START FSH01", fsh_fu_dates, send_line = FALSE)
   start_fsh01(fsh_fu_dates, fsh_fu_nights, fsh_fu_hotels)
   save_data_fsh01(paste0("fsh01_", gsub("-", "", Sys.Date())))
 }
@@ -98,7 +100,7 @@ if(grepl(job_fsh, this_server)){
 if(grepl(job_qr, this_server)){
   before_each_task(2)
   suppressMessages(source("./src/qr01.R"))
-  logger("START QR01", qr_fu_dates)
+  logger("START QR01", qr_fu_dates, send_line = FALSE)
   start_qr01(qr_fu_deps, qr_fu_dests, qr_fu_dates, qr_the_days)
   save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 }
@@ -106,7 +108,7 @@ if(grepl(job_qr, this_server)){
 if(grepl(job_acr, this_server)){
   before_each_task(3)
   suppressMessages(source("./src/acr01.R"))
-  logger("START ACR01", acr_fu_dates)
+  logger("START ACR01", acr_fu_dates, send_line = FALSE)
   start_acr01(acr_fu_dates, acr_fu_nights, acr_fu_hotels)
   save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
 }
@@ -114,13 +116,18 @@ if(grepl(job_acr, this_server)){
 if(grepl(job_hlt, this_server)){
   before_each_task(4)
   suppressMessages(source("./src/hlt01.R"))
-  logger("START HLT01", hlt_fu_dates)
+  logger("START HLT01", hlt_fu_dates, send_line = FALSE)
   start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
   save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
 }
 
 after_all_tasks()
 
+
+# all completed -----------------------------------------------------------
+
+show_tasktime()
+cat(rep("=", 39), "\n")
 
 # small pieces and finalizing recursive task ------------------------------
 
@@ -129,8 +136,3 @@ if(grepl(job_ovi, this_server)) source("./src/ovi01.R")
 if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
 
 
-
-# all completed -----------------------------------------------------------
-
-show_tasktime()
-cat(rep("=", 39), "\n")
