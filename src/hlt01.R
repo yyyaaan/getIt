@@ -48,7 +48,7 @@ start_hlt01 <- function(range_dates = "2021-04-05 2021-04-11",
 
 get_data_hlt01 <- function(cached_txts){
   # cached_txts <- list.files("./cache/", "hlt01_\\d*.pp", full.names = T)
-  # the_file <- "./cache/hlt_tmp.pp"
+  # the_file <- "./cache/hm.pp"
   df <- data.frame(); i <- 0; j <- 0;
   
   # helper functions
@@ -73,6 +73,9 @@ get_data_hlt01 <- function(cached_txts){
     }
     
     # data-e2e changed to data-testid on 2021-01-22
+    # Campaign price are recorded in different field
+    the_rate = the_html %>% html_nodes("[data-testid='moreRatesButton']") %>% html_number()
+    if(is.na(the_rate[1])) the_rate = the_html %>% html_nodes("[data-testid='quickBookPrice']") %>% html_number()
     
     cico  <- the_html %>% html_node("[data-testid='stayDates']") %>% html_text()  %>% 
       str_replace_all("202\\d", "") %>% str_extract_all("\\d+ .{3}") %>% 
@@ -84,7 +87,7 @@ get_data_hlt01 <- function(cached_txts){
       check_out = cico[2],
       room_type = the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text(),
       rate_type = "Best Rate Advertised",
-      rate_avg  = the_html %>% html_nodes("[data-testid='moreRatesButton']") %>% html_number(),
+      rate_avg  = the_rate,
       ccy       = the_html %>% html_node("[data-testid='currencyDropDownSelected']") %>% html_text() %>% str_sub(1,3),
       ts        = the_html %>% html_node("timestamp") %>% html_text())) 
 
@@ -93,7 +96,7 @@ get_data_hlt01 <- function(cached_txts){
   }
   
   cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j,  "\n")
-  
+
   
   df_final <- df %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%
