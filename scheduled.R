@@ -66,6 +66,7 @@ after_all_tasks <- function(){
   the_id <- 7
   if(grepl("fi", this_server)) the_id <- 5
   if(grepl("us", this_server)) the_id <- 6
+  logger("START AY batch", the_id, "of 8", send_line = FALSE)
   start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8)
   save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 }
