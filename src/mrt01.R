@@ -79,8 +79,14 @@ get_data_mrt01 <- function(cached_txts){
       html_text() %>% 
       strsplit(' â\u0080\u0095 ')
     the_time  <- the_html %>% html_node("timestamp") %>% html_text()
-    
     all_rooms <- the_html %>% html_nodes("div.room-rate-results.rate-type.t-box-shadow")
+    
+    if(length(cico) == 0) {
+      j <- j + 1
+      print(the_file)
+      next()
+    }
+    
     for(the_room in all_rooms){
       df <- rbind(df, data.frame(
         hotel     = name,
@@ -96,7 +102,7 @@ get_data_mrt01 <- function(cached_txts){
     }
     
     i <- i + 1
-    if(i %% 50 == 0) cat("Processed", i, "files ( Sold out", j, ")\r")
+    if(i %% 50 == 0) cat("Processed", i, "files ( Sold out", j, ")\n")
   }
   
   cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j, "\n")

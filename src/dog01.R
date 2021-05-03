@@ -9,10 +9,12 @@ for(the_breed in all_breeds){
   the_nodes <- the_breed %>% html_children()
   
   # puppy found
-  if(length(the_nodes) - 1){
+  if(the_nodes %>% html_text() %>% str_detect("pentu")){
     the_link <- html_attr(the_nodes[[1]], "href")
     the_page <- read_html(paste0("https://www.hankikoira.fi", the_link))
-    the_name <- the_page %>% html_nodes("#block-hk-puppies-breeds-available-puppies > div > h3") %>% html_text()
+  
+    the_page %>% html_nodes("h1") %>% html_text()
+    the_name <- the_page %>% html_nodes(".block-hk-breeds-available-puppies > div > h3") %>% html_text()
     the_tbls <- the_page %>% html_table()
     
     if(length(the_name) == length(the_tbls)){
@@ -29,6 +31,7 @@ cat(nrow(all_puppies), "Puppies\n")
 
 final_df <- all_puppies %>% 
   rename(Kasvattajat = `Kasvattaja(t)`) %>%
+  mutate(Rotuyhdistys = as.character(Rotuyhdistys)) %>%
   add_column(tss =Sys.Date()) 
 
 # today's dogs, it INCLUDES duplicate from previous days
