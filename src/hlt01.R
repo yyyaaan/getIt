@@ -57,7 +57,7 @@ get_data_hlt01 <- function(cached_txts){
   
   
   for(the_file in cached_txts){
-
+    
     the_html <- read_html(the_file)
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
@@ -67,15 +67,19 @@ get_data_hlt01 <- function(cached_txts){
     if(the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text() %>% length() == 0)
       the_flag <- "Sold Out"
     
-    if(length(the_flag) && the_flag == "Sold Out"){
-      j <- j + 1
-      next()
-    }
-    
     # data-e2e changed to data-testid on 2021-01-22
     # Campaign price are recorded in different field
     the_rate = the_html %>% html_nodes("[data-testid='moreRatesButton']") %>% html_number()
     if(is.na(the_rate[1])) the_rate = the_html %>% html_nodes("[data-testid='quickBookPrice']") %>% html_number()
+    
+    if(length(the_rate)!= (the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text() %>% length())){
+      the_flag <- "Sold Out"
+      print(the_file)
+    }
+    if(length(the_flag) && the_flag == "Sold Out"){
+      j <- j + 1
+      next()
+    }
     
     cico  <- the_html %>% html_node("[data-testid='stayDates']") %>% html_text()  %>% 
       str_replace_all("202\\d", "") %>% str_extract_all("\\d+ .{3}") %>% 
