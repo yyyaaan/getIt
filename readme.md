@@ -19,7 +19,7 @@ Please note that the NodeJS packages are not included with possibly out-dated `p
 
 `ovi01` does not require parameter; results are incremental, and are saved to local only at this moment
 
-`dog01` does not require parameter; results are repetitve.
+`dog01` does not require parameter; results are repetitive.
 
 `gflt01` requires dates, destinations, specified flight numbers. NOT recommended.
 
@@ -37,3 +37,4 @@ The `scheduled.R` are executed daily, but the whole data is captured completely 
 - 2021-02-27: scheduled on different servers merged to single one, no function change.
 - 2021-03-04: platform updated to latest (Ubuntu 20.04, Puppeteer 3.3.0)
 - 2021-03-23: major change in AY running mode. *AY will be now run in a separated session*.
+- 2021-06-02: AY schedule is now aligned with QR.

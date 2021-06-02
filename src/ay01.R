@@ -1,12 +1,11 @@
 source("shared_url_builder.R")
 source("./src/utilities.R")
 
-start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999, max_batch=8){
+start_ay01_special <- function(keyword = "Tahiti", controller, batch_n=999, max_batch=8,
+                               date_range = seq(as.Date("2021-07-01"), as.Date("2022-05-31"), "days")){
   
   if(tolower(keyword) == "tahiti"){
-    
-    date_range <- seq(as.Date("2021-05-31"), as.Date("2022-03-14"), "days")
-    
+
     param_set <- expand.grid(desta = c("HEL"),
                              destb = c("PPT"),
                              destc = c("PPT"),

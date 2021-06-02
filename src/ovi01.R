@@ -44,7 +44,7 @@ for(the_id in all_ids){
   if(nrow(this_df))out_df <- rbind(out_df, this_df)
   i <- i + 1
   
-  #cat("Completed", i, "/", length(all_ids), "\r" )
+  cat("Completed", i, "/", length(all_ids), "\r" )
   Sys.sleep(sample(def_interval))
 }
 

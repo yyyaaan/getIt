@@ -37,9 +37,10 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
     
     // sorting: uusimmat ensin (ilmoitettu)
     await page.click("button.almacmp-button.almacmp-button--primary-bold");
+    await page.waitFor(3999)
+    await page.screenshot({path: './cache/etuovi.png' , fullPage: true });
     await page.click('div[data-react-toolbox="dropdown"]');
     await page.click('ul > li:nth-child(3)');
-    await page.screenshot({path: './cache/etuovi.png' , fullPage: true });
 
     var all_data = [];
     for (var i = 0; i < maxn; i++) {

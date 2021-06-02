@@ -34,7 +34,10 @@ qr_date_max <- Sys.Date() + 353 - qr_the_days - controller # fixed, interval is 
 qr_fu_deps  <- "HEL OSL AMS"
 qr_fu_dests <- "SYD CBR MEL"
 qr_fu_dates <- seq(qr_date_max - 77*controller, length = 11, by = "-7 days") 
-qr_fu_dates <- qr_fu_dates[qr_fu_dates >= as.Date("2021-01-15")] %>% format("%Y-%m-%d") %>% paste(collapse = " ")
+qr_fu_dates <- qr_fu_dates %>% format("%Y-%m-%d") %>% paste(collapse = " ")
+
+# AY range is relatively fixed during 4 days, as the AY function handles the days
+ay_fu_dates <- seq(qr_date_max - 231, qr_date_max, "days")
 
 mrt_fu_nights <- c(3, 4)
 mrt_fu_hotels <- c(1, 2, 3, 5)
@@ -59,7 +62,7 @@ acr_fu_dates  <- (the_date_max - c(86*controller + 85, 86*controller)) %>% forma
 ### will run before every other task
 before_each_task <- function(the_id){
   logger("START AY batch", the_id, "of 8", send_line = FALSE)
-  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8)
+  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8, ay_fu_dates)
 }
 
 after_all_tasks <- function(){
@@ -67,7 +70,7 @@ after_all_tasks <- function(){
   if(grepl("fi", this_server)) the_id <- 5
   if(grepl("us", this_server)) the_id <- 6
   logger("START AY batch", the_id, "of 8", send_line = FALSE)
-  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8)
+  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8, ay_fu_dates)
   save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 }
 
