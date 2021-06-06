@@ -1,4 +1,4 @@
-const params  = ['https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=PPTMLHI&arrivalDate=2021-04-07&departureDate=2021-04-12&room1NumAdults=2', 'hlt_tmp'];
+const params  = ['https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=PPTMLHH&arrivalDate=2022-04-07&departureDate=2022-04-12&room1NumAdults=2', 'hlt_tmp'];
 const req_url   = params[0];
 const req_name  = params[1];
 const out_text  = params[2];
@@ -34,7 +34,7 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   
   try {
     await page.goto(req_url, wait_opts);
-    await page.waitForSelector('div#__next');
+    //await page.waitForSelector('div#__next');
     
     // determing availability - currently skipped
     var availability = "available";

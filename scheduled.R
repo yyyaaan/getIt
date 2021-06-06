@@ -61,17 +61,17 @@ acr_fu_dates  <- (the_date_max - c(86*controller + 85, 86*controller)) %>% forma
 
 ### will run before every other task
 before_each_task <- function(the_id){
-  logger("START AY batch", the_id, "of 8", send_line = FALSE)
-  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8, ay_fu_dates)
+  #logger("START AY batch", the_id, "of 8", send_line = FALSE)
+  #start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8, ay_fu_dates)
 }
 
 after_all_tasks <- function(){
-  the_id <- 7
-  if(grepl("fi", this_server)) the_id <- 5
-  if(grepl("us", this_server)) the_id <- 6
-  logger("START AY batch", the_id, "of 8", send_line = FALSE)
-  start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8, ay_fu_dates)
-  save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
+  #the_id <- 7
+  #if(grepl("fi", this_server)) the_id <- 5
+  #if(grepl("us", this_server)) the_id <- 6
+  #logger("START AY batch", the_id, "of 8", send_line = FALSE)
+  #start_ay01_special("Tahiti", controller, batch_n=the_id, max_batch=8, ay_fu_dates)
+  #save_data_ay01(paste0("ay01_", gsub("-", "", Sys.Date())))
 }
 
 
