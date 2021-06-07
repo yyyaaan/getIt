@@ -29,8 +29,8 @@ get_exchange_rate <- function(){
   
   ecbxml <- grep("Cube currency", ecbxml, value = TRUE) %>% gsub("[^A-Z|0-9|\\.]", "", .) 
   data.frame(ccy = substr(ecbxml, 2,4), rate = as.numeric(substr(ecbxml, 5, 99))) %>%
-    rbind(data.frame(ccy  = c("EUR", "FJD", "XPF"), 
-                     rate = c(1.0, 2.4725, 119.3317))) %>%
+    rbind(data.frame(ccy  = c("EUR", "FJD", "XPF", "AED"), 
+                     rate = c(1.0, 2.4725, 119.3317, 4.462))) %>%
     saveRDS(file = "./results/latest_ccy.rds")
 }
 

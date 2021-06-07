@@ -26,7 +26,7 @@ start_hlt01 <- function(range_dates = "2021-04-05 2021-04-11",
   urls <- character()
   for(i in sample(1:nrow(param_set))){
     urls <- c(urls, 
-              sprintf("https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=%s&arrivalDate=%s&departureDate=%s&room1NumAdults=2",
+              sprintf("https://www.hilton.com/en/book/reservation/rooms/?ctyhocn=%s&arrivalDate=%s&departureDate=%s&room1NumAdults=2&displayCurrency=EUR",
                       param_set$code[i],
                       param_set$checkin [i] %>% format.Date("%Y-%m-%d"),
                       param_set$checkout[i] %>% format.Date("%Y-%m-%d")))
@@ -48,7 +48,7 @@ start_hlt01 <- function(range_dates = "2021-04-05 2021-04-11",
 
 get_data_hlt01 <- function(cached_txts){
   # cached_txts <- list.files("./cache/", "hlt01_\\d*.pp", full.names = T)
-  # the_file <- "./cache/hm.pp"
+  # the_file <- "./cache/hlt01_20210607063738.pp"
   df <- data.frame(); i <- 0; j <- 0;
   
   # helper functions
@@ -74,7 +74,6 @@ get_data_hlt01 <- function(cached_txts){
     
     if(length(the_rate)!= (the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text() %>% length())){
       the_flag <- "Sold Out"
-      print(the_file)
     }
     if(length(the_flag) && the_flag == "Sold Out"){
       j <- j + 1
@@ -86,10 +85,10 @@ get_data_hlt01 <- function(cached_txts){
       unlist() %>% auto_date()
     
     df <- rbind(df, data.frame(
-      hotel     = the_html %>% html_node("[data-testid='hotelExpander']") %>% html_text(),
+      hotel     = the_html %>% html_node("[data-testid='hotelExpander']") %>% html_text() %>% str_trim(),
       check_in  = cico[1],
       check_out = cico[2],
-      room_type = the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text(),
+      room_type = the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text() %>% str_trim(),
       rate_type = "Best Rate Advertised",
       rate_avg  = the_rate,
       ccy       = the_html %>% html_node("[data-testid='currencyDropDownSelected']") %>% html_text() %>% str_sub(1,3),

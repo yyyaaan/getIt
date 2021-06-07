@@ -83,7 +83,6 @@ get_data_mrt01 <- function(cached_txts){
     
     if(length(cico) == 0) {
       j <- j + 1
-      print(the_file)
       next()
     }
     
