@@ -48,7 +48,7 @@ start_hlt01 <- function(range_dates = "2021-04-05 2021-04-11",
 
 get_data_hlt01 <- function(cached_txts){
   # cached_txts <- list.files("./cache/", "hlt01_\\d*.pp", full.names = T)
-  # the_file <- "./cache/hlt01_20210607063738.pp"
+  # the_file <- "./cache/hlt01_20210608070909.pp"
   df <- data.frame(); i <- 0; j <- 0;
   
   # helper functions
@@ -84,6 +84,8 @@ get_data_hlt01 <- function(cached_txts){
       str_replace_all("202\\d", "") %>% str_extract_all("\\d+ .{3}") %>% 
       unlist() %>% auto_date()
     
+    
+    
     df <- rbind(df, data.frame(
       hotel     = the_html %>% html_node("[data-testid='hotelExpander']") %>% html_text() %>% str_trim(),
       check_in  = cico[1],
@@ -91,22 +93,22 @@ get_data_hlt01 <- function(cached_txts){
       room_type = the_html %>% html_nodes("[data-testid='roomTypeName']") %>% html_text() %>% str_trim(),
       rate_type = "Best Rate Advertised",
       rate_avg  = the_rate,
-      ccy       = the_html %>% html_node("[data-testid='currencyDropDownSelected']") %>% html_text() %>% str_sub(1,3),
+      ccy       = the_html %>% html_node("[for='currencyConverterSelectBoxA']") %>% html_text() %>% str_sub(-3, -1),
       ts        = the_html %>% html_node("timestamp") %>% html_text())) 
-
+    
     i <- i + 1
     if(i %% 50 == 0) cat("Processed", i, "files ( Sold out", j, ")\r")
   }
   
   cat("Completed. Total", i+j, "Fetched", i, "Unavailable", j,  "\n")
-
+  
   
   df_final <- df %>% 
     left_join(readRDS("./results/latest_ccy.rds"), by = "ccy") %>%
     mutate(nights  = as.numeric(check_out - check_in),
            eur_avg = rate_avg / rate,
            tss     = ts %>% ymd_hms() %>% date())  %>%
-    select(hotel, room_type, rate_type, check_in, nights, check_out, eur_avg, ccy, tss, ts)
+    select(hotel, room_type, rate_type, check_in, nights, check_out, eur_avg, ccy, tss, ts, rate_avg)
   
   return(df_final)
 }
@@ -115,7 +117,7 @@ save_data_hlt01 <- function(file_pattern_hlt01){
   # file_pattern_hlt01 <- paste0("hlt01_", gsub("-", "", Sys.Date()))
   # file_pattern_hlt01 <- "hlt01_"
   df_hlt01 <- list.files("./cache/", file_pattern_hlt01, full.names = T) %>% get_data_hlt01()
-
+  
   # send HLT key figures
   df_hlt01 %>% 
     mutate(wk = isoweek(check_in), rm = hotel,

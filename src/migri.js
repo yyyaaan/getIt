@@ -26,12 +26,12 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
   
   try {
     var btn_next = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_next";
-    // (1) kansalaisuus (2) kansaliasuushakemus (3) En-ilman etukateen ole 
-    // (4) Kylla-oleva passi  (5) Kylla-enter finaland (6) pvm
-    var step1 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.processTypeRadioContainer > div:nth-child(3) > label > div.processTypeRadio__icon";
-    var step2 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(4) > label";
-    var step3 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(5) > label";
-    var step4 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(5) > label";
+    // (1) kansalaisuus (2) kansaliasuushakemus (3) En-ilman etukateen ole (4) Kylla-oleva passi  (5) Kylla-enter finaland (6) pvm
+    // (1) oleskelulup (2) pysyvaa (3) - (4) 0 (5) kylla - enter finland (6) pvm
+    var step1 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.processTypeRadioContainer > div:nth-child(1) > label > div.processTypeRadio__icon";
+    var step2 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(8) > label";
+    // var step3 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(5) > label";
+    // var step4 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(5) > label";
     var step5 = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-processGuidance__viewStage > div:nth-child(4) > label";
     var ttpvm = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_dateInput";
     var laske = "#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_stageForm > div.queueCounter__list__item.js-queueCounter__list__item > div.form-inline.col-md-4 > div > div > button";
@@ -40,15 +40,15 @@ const ua_string = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, li
     await page.click(step1); 
     await page.click(btn_next);
     await page.waitFor(to_wait); await page.click(step2); await page.click(btn_next);
-    await page.waitFor(to_wait); await page.click(step3); await page.click(btn_next);
-    await page.waitFor(to_wait); await page.click(step4); await page.click(btn_next);
+    //await page.waitFor(to_wait); await page.click(step3); await page.click(btn_next);
+    //await page.waitFor(to_wait); await page.click(step4); await page.click(btn_next);
     await page.waitFor(to_wait); await page.click(step5); await page.click(btn_next);
-    await page.waitFor(to_wait); await page.type(ttpvm, "01.01.2021", {delay: 100});
+    await page.waitFor(to_wait); await page.type(ttpvm, "01.06.2021", {delay: 100});
     await page.click(laske); await page.waitFor(to_wait);
     
     var the_res = await page.evaluate(() => document.querySelector("#_fi_yja_process_guidance_calculator_controller_ApplicationCalculatorWebController_WAR_fiyjaprocessguidancecalculator_resultProcessOngoing > div:nth-child(2) > span").innerText);
 
-    console.log(the_res);
+    console.log("Pysyvää oleskelulupa: " + the_res);
     await page.screenshot({path: './cache/a_migri.png'});
   } catch (e) {	
     await page.screenshot({path: './cache/a_migri.png'});

@@ -136,7 +136,7 @@ cat(rep("=", 39), "\n")
 # small pieces and finalizing recursive task ------------------------------
 
 #if(grepl(job_ovi, this_server)) source("./src/ovi01.R")
-#if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
+if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
 if(grepl(job_dog, this_server)) source("./src/s01.R")
 if(grepl(job_dog, this_server)) source("./src/dog01.R")
 
