@@ -16,7 +16,7 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   const browser = await puppeteer.launch({
     headless: true, 
     ignoreHTTPSErrors: true,
-    defaultViewport: {width: 1080, height: 1330},
+    defaultViewport: {width: 1920, height: 1330},
     args: ['--no-sandbox']
   });
   
@@ -34,7 +34,7 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   try {
     await page.goto(req_url, wait_opts);
     await page.waitForSelector('div.flightDetail')
-
+    
     await page.click('div.cal-btn');
     await page.waitForSelector('h3.csJHeadDeprt');
     
@@ -44,9 +44,11 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
 
     filesave.writeFile('./cache/' + req_name + '.pp', out.join(), function(err) {}); 
   } catch (e) {	
+    await page.screenshot({path: './cache/a_qr_error.png'});
     out[0] = 'error';
     out.push(e);
     filesave.writeFile('./cache/' + req_name + '.pp', out.join(), function(err) {}); 
+    
   }
   
   await browser.close()
