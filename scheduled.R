@@ -1,8 +1,10 @@
 # system("Rscript '/home/yanpan/getIt/scheduled.R'  >> '/home/yanpan/getIt/scheduled.log' 2>&1", wait = FALSE)
+# rstudioapi::jobRunScript("./src/ovi01.R", name = "Etuovi", workingDir = ".")
 
 .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
 setwd("/home/yanpan/getIt")
 suppressMessages({source("./src/utilities.R"); source("./src/ay01.R")})
+
 
 
 # job distribution --------------------------------------------------------
@@ -140,5 +142,4 @@ if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", inter
 if(grepl(job_dog, this_server)) source("./src/s01.R")
 if(grepl(job_dog, this_server)) source("./src/dog01.R")
 
-
-
+# for(i in 1:10) system(paste("node ./src/vihta.js", i), wait = TRUE)
