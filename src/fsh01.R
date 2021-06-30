@@ -58,7 +58,7 @@ get_data_fsh01 <- function(cached_txts){
   
   
   for(the_file in cached_txts){
-    
+
     the_html <- read_html(the_file)
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     
@@ -70,7 +70,7 @@ get_data_fsh01 <- function(cached_txts){
       j <- j + 1
       next()
     }
-    
+
     cico  <- the_html %>% html_node("span.search-summary-date") %>% html_text() %>%
       str_replace_all("202\\d|\\n", "") %>% str_extract_all(".{3} \\d+") %>%
       unlist() %>% auto_date()
@@ -81,7 +81,7 @@ get_data_fsh01 <- function(cached_txts){
       check_out = cico[2],
       room_type = the_html %>% html_nodes(".room-item-title") %>% html_trim(),
       rate_type = "Best Rate Advertised",
-      rate_avg  = the_html %>% html_nodes(".visible-xs > .nightly-rate > .fullprice") %>% html_number(),
+      rate_avg  = the_html %>% html_nodes("div.price > div > .fullprice") %>% html_number(),
       ccy       = the_html %>% html_node(".fullprice") %>% html_text() %>% str_extract("[A-Z]{3}"),
       ts        = the_html %>% html_node("timestamp") %>% html_text())) 
     
