@@ -1,5 +1,4 @@
 # system("Rscript '/home/yanpan/getIt/scheduled.R'  >> '/home/yanpan/getIt/scheduled.log' 2>&1", wait = FALSE)
-# rstudioapi::jobRunScript("./src/ovi01.R", name = "Etuovi", workingDir = ".")
 
 .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
 setwd("/home/yanpan/getIt")
@@ -82,7 +81,7 @@ after_all_tasks <- function(){
 ### exchange rate should be fetched everywhere
 get_exchange_rate()
 ### push yesterday's AY results
-if(grepl("fi", this_server)) message_fromBQ_ay01()
+### if(grepl("fi", this_server)) message_fromBQ_ay01()
 
 if(grepl(job_mrt, this_server)){
   before_each_task(0)
@@ -111,20 +110,20 @@ if(grepl(job_qr, this_server)){
   save_data_qr01(paste0("qr01_", gsub("-", "", Sys.Date())))
 }
 
-if(grepl(job_acr, this_server)){
-  before_each_task(3)
-  suppressMessages(source("./src/acr01.R"))
-  logger("START ACR01", acr_fu_dates, send_line = FALSE)
-  start_acr01(acr_fu_dates, acr_fu_nights, acr_fu_hotels)
-  save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
-}
-
 if(grepl(job_hlt, this_server)){
   before_each_task(4)
   suppressMessages(source("./src/hlt01.R"))
   logger("START HLT01", hlt_fu_dates, send_line = FALSE)
   start_hlt01(hlt_fu_dates, hlt_fu_nights, hlt_fu_hotels)
   save_data_hlt01(paste0("hlt01_", gsub("-", "", Sys.Date())))
+}
+
+if(grepl(job_acr, this_server)){
+  before_each_task(3)
+  suppressMessages(source("./src/acr01.R"))
+  logger("START ACR01", acr_fu_dates, send_line = FALSE)
+  start_acr01(acr_fu_dates, acr_fu_nights, acr_fu_hotels)
+  save_data_acr01(paste0("acr01_", gsub("-", "", Sys.Date())))
 }
 
 after_all_tasks()
@@ -137,9 +136,13 @@ cat(rep("=", 39), "\n")
 
 # small pieces and finalizing recursive task ------------------------------
 
-#if(grepl(job_ovi, this_server)) source("./src/ovi01.R")
 if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
 if(grepl(job_dog, this_server)) source("./src/s01.R")
 if(grepl(job_dog, this_server)) source("./src/dog01.R")
 
-# for(i in 1:10) system(paste("node ./src/vihta.js", i), wait = TRUE)
+# rstudioapi::jobRunScript("./src/ovi01.R", name = "Etuovi", workingDir = ".")
+# for(i in sample(1:10)) system(paste("node ./src/vihta.js", i))
+# system("node ./src/ay02 hel tah 24112021 03122021")
+# system("node ./src/ay02 hel nou 25052022 08062022", wait = F)
+
+
