@@ -10,14 +10,14 @@ suppressMessages({source("./src/utilities.R"); source("./src/ay01.R")})
 
 ### by server (currently 3 servers), AY is separated
 this_server <- Sys.info()['nodename']
-job_acr <- "us"
+job_acr <- "fi"
 job_hlt <- "us"
-job_dog <- "fi"
+job_etc <- "fi"
 job_mrt <- "fi"
-job_mgr <- "fi"
+job_mgr <- "us"
 job_ovi <- "fi"
 job_qr  <- "csc"
-job_fsh <- "csc"
+job_fsh <- "us"
 
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
@@ -137,8 +137,8 @@ cat(rep("=", 39), "\n")
 # small pieces and finalizing recursive task ------------------------------
 
 if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
-if(grepl(job_dog, this_server)) source("./src/s01.R")
-if(grepl(job_dog, this_server)) source("./src/dog01.R")
+if(grepl(job_mgr, this_server)) source("./src/s01.R")
+if(grepl(job_etc, this_server)) source("./src/dog01.R")
 
 # rstudioapi::jobRunScript("./src/ovi01.R", name = "Etuovi", workingDir = ".")
 # for(i in sample(1:10)) system(paste("node ./src/vihta.js", i))

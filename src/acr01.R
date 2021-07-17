@@ -119,19 +119,17 @@ save_data_acr01 <- function(file_pattern_acr01){
   # file_pattern_acr01 <- paste0("acr01_", gsub("-", "", Sys.Date()))
   df_acr01 <- list.files("./cache/", file_pattern_acr01, full.names = T) %>% get_data_acr01()
   
-  # send the latest pricing
-  df_acr01 %>% 
-    add_row(df_acr01 %>% mutate(room_type = "ANY Sofitel Moorea")) %>%
-    filter(str_detect(hotel, "(?i)Moorea")) %>%
-    mutate(wk = isoweek(check_in), 
-           rm = str_extract(room_type, "[a-zA-Z ]*"),
+  
+  df_acr01 %>%
+    mutate(hr = paste(word(hotel, 1, 2), word(rate_type, 1)),
+           wk = isoweek(check_in), 
            check_in = floor_date(check_in, "week", 1),
-           week_start = format(check_in, "%d%b"))  %>% 
-    group_by(nights, rm, check_in, week_start) %>%
+           week_start = format(check_in, "%d%b")) %>%
+    group_by(hr, nights, wk, check_in, week_start) %>%
     summarise(best_daily = min(eur_avg) %>% ceiling(), .groups = "drop") %>%
-    pivot_wider(id_cols = c('rm', 'week_start'), names_from = nights, values_from = best_daily) %>%
+    pivot_wider(id_cols = c('hr', 'week_start'), names_from = nights, values_from = best_daily) %>%
     unite("out", rev(colnames(.)[-1]), sep = " ") %>%
-    line_richmsg("Accor latest prices", ., "rm", "out")
+    line_richmsg("Accor latest prices", ., "hr", "out")
   
   # continue the routine
   saveRDS(df_acr01, paste0("./results/", file_pattern_acr01, format(Sys.time(), "_%H%M"), ".rds"))
