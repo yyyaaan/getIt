@@ -70,9 +70,10 @@ get_data_mrt01 <- function(cached_txts){
     } 
     
     name <- the_html %>% html_node("h1 > a > span") %>% html_text() 
-    ccy  <- the_html %>% 
-      html_node('div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > span') %>% 
-      html_text() %>% 
+    ccy  <- max(
+      the_html %>% html_node('div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > span') %>% html_text(),
+      the_html %>% html_nodes("#tab1 > div > div > div:nth-child(1) > div > div.l-rate-container.js-rate-container.l-row.l-s-col-4.l-m-col-8.l-l-col-9.l-l-col-last.l-xl-col-9.l-xl-col-last.l-border-box-sizing > div:nth-child(2) > div.l-s-col-4.l-m-col-8.l-l-col-split-5of9.l-xl-col-split-5of9.l-margin-top.l-l-margin-top-none.l-xl-margin-top-none.l-xl-padding-left.l-border-box-sizing.l-rate-submission.rate-submission.l-rate-select-container.l-display-flex > div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > div > span") %>% html_text(),
+      na.rm = TRUE) %>%
       substr(., regexpr("[A-Z]{3}", .)[1], regexpr("[A-Z]{3}", .)[1] + 2)
     cico <- the_html %>% 
       html_nodes("#staydates > a > div.t-line-height-l.is-visible.is-visible-l") %>% 

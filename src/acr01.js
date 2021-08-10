@@ -34,6 +34,7 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
   
   try {
     await page.goto(req_url, wait_opts);
+    await page.waitFor(6999)
     await page.waitForSelector('.default__main');
     
     // cookie setting confirmation

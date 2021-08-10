@@ -21,9 +21,9 @@ job_fsh <- "us"
 
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
-def_interval <<- 20:35
 def_int_long <<- 1200:3000
-
+def_interval <<- 20:35
+if(grepl("us", this_server)) def_interval <<- 39:66
 
 
 # parameters --------------------------------------------------------------
@@ -143,6 +143,6 @@ if(grepl(job_etc, this_server)) source("./src/dog01.R")
 # rstudioapi::jobRunScript("./src/ovi01.R", name = "Etuovi", workingDir = ".")
 # for(i in sample(1:10)) system(paste("node ./src/vihta.js", i))
 # system("node ./src/ay02 hel tah 24112021 03122021")
-# system("node ./src/ay02 hel nou 25052022 08062022", wait = F)
+# system("node ./src/ay02 tll nou 25052022 08062022", wait = F)
 
 
