@@ -2,6 +2,7 @@
 
 .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
 setwd("/home/yanpan/getIt")
+system("git pull")
 suppressMessages({source("./src/utilities.R"); source("./src/ay01.R")})
 
 
