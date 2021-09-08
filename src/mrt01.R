@@ -59,9 +59,8 @@ start_mrt01 <- function(range_dates = "2020-12-15 2021-01-15", #"2021-05-01 2021
 get_data_mrt01 <- function(cached_txts){
   # cached_txts <- list.files("./cache/", "mrt01_\\d*.pp", full.names = T)
   df <- data.frame(); i <- 0; j <- 0;
-  
+
   for(the_file in cached_txts){
-    
     the_html <- read_html(the_file)
     the_flag <- the_html %>% html_nodes("flag") %>% html_text()
     if(length(the_flag) && the_flag == "Sold Out"){
@@ -70,11 +69,14 @@ get_data_mrt01 <- function(cached_txts){
     } 
     
     name <- the_html %>% html_node("h1 > a > span") %>% html_text() 
-    ccy  <- max(
-      the_html %>% html_node('div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > span') %>% html_text(),
-      the_html %>% html_nodes("#tab1 > div > div > div:nth-child(1) > div > div.l-rate-container.js-rate-container.l-row.l-s-col-4.l-m-col-8.l-l-col-9.l-l-col-last.l-xl-col-9.l-xl-col-last.l-border-box-sizing > div:nth-child(2) > div.l-s-col-4.l-m-col-8.l-l-col-split-5of9.l-xl-col-split-5of9.l-margin-top.l-l-margin-top-none.l-xl-margin-top-none.l-xl-padding-left.l-border-box-sizing.l-rate-submission.rate-submission.l-rate-select-container.l-display-flex > div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > div > span") %>% html_text(),
-      na.rm = TRUE) %>%
-      substr(., regexpr("[A-Z]{3}", .)[1], regexpr("[A-Z]{3}", .)[1] + 2)
+    
+    # currency can be different, in case there are campaign
+    ccy  <- the_html %>% html_node('div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > span') %>% html_text() %>% substr(., regexpr("[A-Z]{3}", .)[1], regexpr("[A-Z]{3}", .)[1] + 2)
+    if (is.na(ccy[1])) ccy <- the_html %>% html_nodes("#tab1 > divag > div > div:nth-child(1) > div > div.l-rate-container.js-rate-container.l-row.l-s-col-4.l-m-col-8.l-l-col-9.l-l-col-last.l-xl-col-9.l-xl-col-last.l-border-box-sizing > div:nth-child(2) > div.l-s-col-4.l-m-col-8.l-l-col-split-5of9.l-xl-col-split-5of9.l-margin-top.l-l-margin-top-none.l-xl-margin-top-none.l-xl-padding-left.l-border-box-sizing.l-rate-submission.rate-submission.l-rate-select-container.l-display-flex > div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > div > span") %>% 
+      html_text() %>% substr(., regexpr("[A-Z]{3}", .)[1], regexpr("[A-Z]{3}", .)[1] + 2)
+    if (is.na(ccy[1])) ccy <- the_html %>% html_nodes("#tab1 > div > div > div:nth-child(1) > div > div.l-rate-container.js-rate-container.l-row.l-s-col-4.l-m-col-8.l-l-col-9.l-l-col-last.l-xl-col-9.l-xl-col-last.l-border-box-sizing > div:nth-child(1) > div.l-s-col-4.l-m-col-8.l-l-col-split-5of9.l-xl-col-split-5of9.l-margin-top.l-l-margin-top-none.l-xl-margin-top-none.l-xl-padding-left.l-border-box-sizing.l-rate-submission.rate-submission.l-rate-select-container.l-display-flex > div.without-widget-flow.l-rate-display.rate-display.m-pricing-block.l-s-col-2.l-m-col-4.l-l-col-6.l-pos-relative.l-align-flex-items > div > div > div > span") %>% 
+      html_text() %>% substr(., regexpr("[A-Z]{3}", .)[1], regexpr("[A-Z]{3}", .)[1] + 2)
+    
     cico <- the_html %>% 
       html_nodes("#staydates > a > div.t-line-height-l.is-visible.is-visible-l") %>% 
       html_text() %>% 
@@ -88,17 +90,25 @@ get_data_mrt01 <- function(cached_txts){
     }
     
     for(the_room in all_rooms){
-      df <- rbind(df, data.frame(
-        hotel     = name,
-        check_in  = cico[[1]][1],
-        check_out = cico[[1]][2],
-        room_type = the_room %>% html_node('h3.l-margin-bottom-none') %>% html_text(),
-        rate_type = the_room %>% html_nodes('div.l-rate-container') %>% html_nodes('h3') %>% html_text(),
-        #rate_text= the_room %>% html_nodes('div.rate-price') %>% html_text(),
-        rate_avg  = the_room %>% html_nodes('div.l-rate-inner-container') %>% html_attr('data-totalpricebeforetax'),
-        rate_sum  = the_room %>% html_nodes('div.l-rate-inner-container') %>% html_attr('data-totalprice'),
-        ccy       = ccy,
-        ts        = the_time)) 
+      df <- tryCatch(
+        {rbind(df, data.frame(
+          hotel     = name,
+          check_in  = cico[[1]][1],
+          check_out = cico[[1]][2],
+          room_type = the_room %>% html_node('h3.l-margin-bottom-none') %>% html_text(),
+          rate_type = the_room %>% html_nodes('div.l-rate-container') %>% html_nodes('h3') %>% html_text(),
+          #rate_text= the_room %>% html_nodes('div.rate-price') %>% html_text(),
+          rate_avg  = the_room %>% html_nodes('div.l-rate-inner-container') %>% html_attr('data-totalpricebeforetax'),
+          rate_sum  = the_room %>% html_nodes('div.l-rate-inner-container') %>% html_attr('data-totalprice'),
+          ccy       = ccy,
+          ts        = the_time))},
+        error = function(e){
+          message(e)
+          print(the_file)
+          return(df)
+        }
+      )
+      
     }
     
     i <- i + 1
