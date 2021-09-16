@@ -9,5 +9,6 @@ the_block <- html_nodes(the_page, ".so-widget-sow-editor")[[the_id]]
 the_text <- the_block %>% html_nodes("div.portlet-body") %>% html_text()
 
 # send to line
-gsub("\\n", "", the_text[length(the_text)]) %>% line_to_user()
+gsub("\\n\\n", "", the_text[length(the_text)]) %>%
+  gsub("\\n", "\\\\n", .) %>% line_to_user()
 

@@ -3,7 +3,7 @@
 .libPaths(c("/usr/local/lib/R/site-library", .libPaths()))
 setwd("/home/yanpan/getIt")
 system("git pull")
-suppressMessages({source("./src/utilities.R"); source("./src/ay01.R")})
+suppressMessages({source("./src/utilities.R")}) # source("./src/ay01.R")
 
 
 
@@ -12,7 +12,7 @@ suppressMessages({source("./src/utilities.R"); source("./src/ay01.R")})
 ### by server (currently 3 servers), AY is separated
 this_server <- Sys.info()['nodename']
 job_acr <- "fi"
-job_hlt <- "fi"
+job_hlt <- "none"
 job_etc <- "fi"
 job_mrt <- "fi"
 job_mgr <- "us"
@@ -138,7 +138,7 @@ cat(rep("=", 39), "\n")
 # small pieces and finalizing recursive task ------------------------------
 
 if(grepl(job_mgr, this_server)) line_to_user(system("node ./src/migri.js", intern = TRUE))
-if(grepl(job_mgr, this_server)) source("./src/s01.R")
+if(grepl(job_etc, this_server)) source("./src/s01.R")
 if(grepl(job_etc, this_server)) source("./src/dog01.R")
 
 # rstudioapi::jobRunScript("./src/ovi01.R", name = "Etuovi", workingDir = ".")
