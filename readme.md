@@ -15,6 +15,8 @@ Please note that the NodeJS packages are not included with possibly out-dated `p
 
 `mrt01` requires dates, hotel meta. Outputs are detailed with conditions and types. Rates include fees and all taxes as reported. It has be recognized that the average rate was not correctly reported by mrt, and therefore, the average rate is now a calculated field.
 
+`mrt02` requires specific URLs that composed of dates and location. It summarize all hotels' lowest advertised prices, taxes and fees inlcuded (at least expected to).
+
 `acr01`, `hlt01` are similar with above
 
 `ovi01` does not require parameter; results are incremental, and are saved to local only at this moment

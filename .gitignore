@@ -12,3 +12,5 @@ scheduled.log
 schema.json
 to_load.txt
 src/debugger.js
+package.json
+package-lock.json
