@@ -158,7 +158,7 @@ logger <- function(..., log_name = "getIt", send_line = TRUE){
 
 line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
   
-  username <- ifelse(str_detect(Sys.info()['nodename'], "server"), "yanpan", "yan_pan2")
+  username <- ifelse(str_detect(Sys.info()['nodename'], "server|csc"), "yanpan", "yan_pan2")
   
   text <- Sys.info()['nodename'] %>% str_remove_all("yan|server|01") %>% paste(text)
   
@@ -204,7 +204,7 @@ line_richmsg <- function(title, df, var_card, var_rows, debug = FALSE,
     list(type = "flex", altText = title, contents = flx)))
   
   
-  username <- ifelse(str_detect(Sys.info()['nodename'], "server"), "yanpan", "yan_pan2")
+  username <- ifelse(str_detect(Sys.info()['nodename'], "server|csc"), "yanpan", "yan_pan2")
   
   system2("curl",
           args = c("-s", "-v", "-X",
