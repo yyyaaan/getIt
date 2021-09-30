@@ -11,6 +11,7 @@ def_break  <- 199:299
 def_n_jobs <- 6
 def_interval <- 20:40
 def_int_long <- 1200:3000
+def_tokens <- list.files("~", pattern = "token_line", full.names = TRUE, all.file = TRUE)[1]
 
 
 get_time_str <- function(){
@@ -125,7 +126,7 @@ start_retry <- function(wildcard, jssrc){
 
 util_bq_upload <- function(data_to_upload, table_name, dataset_name = "Explore", silent = FALSE){
   bq_deauth()
-  bq_auth(path = "/home/yanpan/.gcp.json")
+  bq_auth(path = list.files("~", pattern = "gcp.json", full.names = TRUE, all.files = TRUE)[1])
   
   bq_table(project = "yyyaaannn",
            dataset = dataset_name,
@@ -158,8 +159,6 @@ logger <- function(..., log_name = "getIt", send_line = TRUE){
 
 line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
   
-  username <- ifelse(str_detect(Sys.info()['nodename'], "server|csc"), "yanpan", "yan_pan2")
-  
   text <- Sys.info()['nodename'] %>% str_remove_all("yan|server|01") %>% paste(text)
   
   system2("curl",
@@ -167,7 +166,7 @@ line_to_user <- function(text, to = 'U4de6a435823ee64a0b9254783921216a'){
                    "POST https://api.line.me/v2/bot/message/push",
                    "-H", "'Content-Type: application/json'",
                    "-H", sprintf("'Authorization: Bearer %s'",
-                                 readLines(paste0('/home/', username, '/.token_line'))[1]),
+                                 readLines(def_tokens)[1]),
                    "-d", sprintf("'{\"to\": \"%s\", \"messages\": [{\"type\": \"text\", \"text\": \"%s\"}]}'",
                                  to, text)),
           stdout = FALSE, 
@@ -203,14 +202,11 @@ line_richmsg <- function(title, df, var_card, var_rows, debug = FALSE,
   msg <- list(to = to, messages = list(
     list(type = "flex", altText = title, contents = flx)))
   
-  
-  username <- ifelse(str_detect(Sys.info()['nodename'], "server|csc"), "yanpan", "yan_pan2")
-  
   system2("curl",
           args = c("-s", "-v", "-X",
                    "POST https://api.line.me/v2/bot/message/push",
                    "-H", "'Content-Type: application/json'",
-                   "-H", sprintf("'Authorization: Bearer %s'", readLines(paste0('/home/', username, '/.token_line'))[1]),
+                   "-H", sprintf("'Authorization: Bearer %s'", readLines(def_tokens)[1]),
                    # "-d", sprintf("'{\"to\": \"%s\", \"messages\": [%s]}'", to, toJSON(msg))
                    "-d", sprintf("'%s'", toJSON(msg, auto_unbox = T))
           ),
