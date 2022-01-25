@@ -53,7 +53,6 @@ get_data_fsh01 <- function(cached_txts){
   
   # helper functions
   html_number <- . %>% html_text() %>% str_replace_all("[^\\d]", "") %>% as.numeric()
-  auto_date   <- . %>% paste(year(today())) %>% mdy() %>% ifelse(. < today(), . + years(1), .) %>% as_date()
   html_trim <- . %>% html_text() %>% str_replace_all("\\n|  ", "")
   
   
@@ -71,9 +70,9 @@ get_data_fsh01 <- function(cached_txts){
       next()
     }
 
-    cico  <- the_html %>% html_node("span.search-summary-date") %>% html_text() %>%
-      str_replace_all("202\\d|\\n", "") %>% str_extract_all(".{3} \\d+") %>%
-      unlist() %>% auto_date()
+    cico  <- the_html %>% html_node(".search-summary__form-field--check-in-check-out") %>% html_text() %>%
+      str_extract_all("\\d{2}/\\d{2}/\\d{4}") %>%
+      unlist() %>% mdy()
     
     df <- rbind(df, data.frame(
       hotel     = the_html %>% html_node("span.search-summary-item") %>% html_text() %>% paste("Four Seasons", .),

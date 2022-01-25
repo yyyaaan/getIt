@@ -1,4 +1,4 @@
-const params  = ['https://reservations.fourseasons.com/choose-your-room?hotelCode=BOB462&checkIn=2022-01-09&checkOut=2022-01-15&adults=2&children=0&promoCode=&ratePlanCode=&roomAmadeusCode=&_charset_=UTF-8', 'fsh_tmp'];
+const params  = ['https://reservations.fourseasons.com/choose-your-room?hotelCode=BOB462&checkIn=2022-05-09&checkOut=2022-05-15&adults=2&children=0&promoCode=&ratePlanCode=&roomAmadeusCode=&_charset_=UTF-8', 'fsh_tmp'];
 const req_url   = params[0];
 const req_name  = params[1];
 const out_text  = params[2];
@@ -43,7 +43,7 @@ out.push("\n<qurl>" + req_url + '</qurl>\n<timestamp>' + (exe_start.toISOString(
     else {
       await page.waitForSelector('ul.search-results');
       out.push("<flag>Available</flag>");
-	  	out.push(await page.evaluate(() => document.querySelector('div.search-summary-group').outerHTML));
+	  	//out.push(await page.evaluate(() => document.querySelector('div.search-summary-group').outerHTML));
 	  	out.push(await page.evaluate(() => document.querySelector('div.main-inner').outerHTML));
     }
 
