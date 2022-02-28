@@ -11,10 +11,10 @@ suppressMessages({source("./src/utilities.R")}) # source("./src/ay01.R")
 
 ### by server (currently 3 servers), AY is separated
 this_server <- Sys.info()['nodename']
-job_acr <- "fi"
-job_hlt <- "ip-10-123"
+job_acr <- "xxx"
+job_hlt <- "xxx"
 job_etc <- "fi"
-job_mrt <- "fi"
+job_mrt <- "csc"
 job_mgr <- "us"
 job_ovi <- "fi"
 job_qr  <- "csc"
