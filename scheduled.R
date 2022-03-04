@@ -14,11 +14,11 @@ this_server <- Sys.info()['nodename']
 job_acr <- "xxx"
 job_hlt <- "xxx"
 job_etc <- "fi"
-job_mrt <- "csc"
+job_mrt <- "xxx"
 job_mgr <- "us"
 job_ovi <- "fi"
-job_qr  <- "csc"
-job_fsh <- "us"
+job_qr  <- "xxx"
+job_fsh <- "xxx"
 
 ### by date (currently a 4-day loop)
 controller   <<- as.numeric(Sys.Date()) %% 4
