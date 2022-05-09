@@ -1,15 +1,21 @@
+--- 
+
+# Project Archived & Replaced by yCrawl
+
+---
+
 This project replace the `get` project using [puppeteer](!https://github.com/puppeteer/puppeteer/tree/v3.1.0) instead of [chromeless](!https://github.com/prisma-archive/chromeless)
 
 Please note that the NodeJS packages are not included with possibly out-dated `package-lock.json`; install depedencies separately.
 
-# Folder Structure
+## Folder Structure
 
 - (root): the triggers and programs + some shared ones that would be used outside this project
 - src: the main codes including `R` and `js` that achieves the "goal". Utilities for Puppeteer and NodeJS are also located there.
 - results: saves the organized output on daily basis.
 - cache: stores the sources temporary `js` created. This folder is not under version control.
 
-# Functions
+## Functions
 
 `qr01` requires dates and destinations. Outputs are limited to lowest prices per day per flight segment.
 
@@ -25,7 +31,7 @@ Please note that the NodeJS packages are not included with possibly out-dated `p
 
 `gflt01` requires dates, destinations, specified flight numbers. NOT recommended.
 
-# Routines
+## Routines
 
 The `scheduled.R` are executed daily, but the whole data is captured completely only once in a 4-day span. `subscheduled.R` will be fired by `scheduled.R` conditionally.
 
